@@ -6,7 +6,6 @@ app.use(express.json());
 
 const TOKEN = process.env.BOT_TOKEN;
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
-
 const ADMIN_ID = 455696990;
 
 const PRODUCTS = `
@@ -17,9 +16,15 @@ const PRODUCTS = `
 3) ТЕРЕН-4 — 250 грн
 4) ТРИЗУБ-4 (струйний) — 250 грн
 5) КОБРА-1Н 50 мл — 200 грн
+`;
 
-Для замовлення напишіть:
-ПІБ, телефон, місто, № відділення, товар
+const ORDER_TEXT = `
+📝 Для замовлення надішліть ОДНИМ повідомленням:
+
+ПІБ, телефон, місто, № відділення Нової пошти, товар
+
+Приклад:
+Іван Петренко, 0971234567, Львів, 12, КОБРА-1 МВС
 `;
 
 app.post("/", async (req, res) => {
@@ -37,6 +42,7 @@ app.post("/", async (req, res) => {
           reply_markup: {
             keyboard: [
               [{ text: "🛒 Асортимент" }],
+              [{ text: "📝 Оформити замовлення" }],
               [{ text: "💬 Консультант" }]
             ],
             resize_keyboard: true
@@ -49,23 +55,29 @@ app.post("/", async (req, res) => {
       await sendMessage(chatId, PRODUCTS);
     }
 
+    if (text === "📝 Оформити замовлення") {
+      await sendMessage(chatId, ORDER_TEXT);
+    }
+
     if (text === "💬 Консультант") {
       await sendMessage(chatId, "Напишіть менеджеру: @annrb");
     }
 
-    // будь-яке повідомлення з комами = замовлення
     if (
       text &&
       text.includes(",") &&
-      text !== "/start" &&
+      !text.startsWith("/") &&
       text !== "🛒 Асортимент" &&
+      text !== "📝 Оформити замовлення" &&
       text !== "💬 Консультант"
     ) {
       await sendMessage(chatId, "✅ Замовлення прийнято! Скоро зв'яжемось.");
 
       await sendMessage(
         ADMIN_ID,
-        `🆕 НОВЕ ЗАМОВЛЕННЯ\n\n${text}`
+        `🆕 НОВЕ ЗАМОВЛЕННЯ
+
+${text}`
       );
     }
   }
@@ -92,6 +104,4 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("Server started");
-});
+app.listen(PORT, () => console.log("Server started"));
