@@ -88,6 +88,19 @@ app.post("/", async (req, res) => {
     const chatId = msg.chat.id;
     const text = msg.text || "";
 
+    // теплий лід
+    if (text === "+") {
+      await sendMessage(
+        chatId,
+        "💬 Напишіть коротко, для чого потрібен засіб самозахисту (місто / авто / для дівчини / інше), і менеджер підкаже найкращий варіант."
+      );
+
+      await sendMessage(
+        ADMIN_ID,
+        `🔥 Новий теплий лід\nКлієнт написав "+" (ID: ${chatId})`
+      );
+    }
+
     // Фото/відео відгук
     if (waitingReview.has(chatId) && (msg.photo || msg.video)) {
       waitingReview.delete(chatId);
@@ -121,7 +134,11 @@ app.post("/", async (req, res) => {
     if (text === "/start") {
       await sendMessage(
         chatId,
-        "🔥 САМОЗАХИСТ UA | Засоби самозахисту | Перцеві балони\n\nОберіть дію:",
+        `👋 Вітаємо в САМОЗАХИСТ UA
+
+🛡 Допоможемо підібрати ідеальний засіб самозахисту саме для вас.
+
+Напишіть "+" у чат, якщо потрібна консультація, або оберіть кнопку нижче 👇`,
         { reply_markup: mainKeyboard() }
       );
     }
@@ -211,9 +228,7 @@ app.post("/", async (req, res) => {
 
       await fetch(SHEET_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(order)
       });
 
@@ -241,9 +256,7 @@ app.post("/", async (req, res) => {
 async function sendMessage(chatId, text, extra = {}) {
   await fetch(`${TELEGRAM_API}/sendMessage`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       chat_id: chatId,
       text,
