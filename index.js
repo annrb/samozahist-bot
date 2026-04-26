@@ -8,6 +8,10 @@ const TOKEN = process.env.BOT_TOKEN;
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
 const ADMIN_ID = 455696990;
 
+// URL Google Sheets webhook
+const SHEET_URL =
+  "https://script.google.com/macros/s/AKfycbxbt-IkoBVsG1nsspQmkGQ49qhmpSB_vw6llTzJXwRIrVHVtT0QaegT6pob07zfWYNh/exec";
+
 const PRODUCTS = `
 🔥 Наш асортимент:
 
@@ -63,6 +67,7 @@ app.post("/", async (req, res) => {
       await sendMessage(chatId, "Напишіть менеджеру: @annrb");
     }
 
+    // Замовлення
     if (
       text &&
       text.includes(",") &&
@@ -71,13 +76,41 @@ app.post("/", async (req, res) => {
       text !== "📝 Оформити замовлення" &&
       text !== "💬 Консультант"
     ) {
-      await sendMessage(chatId, "✅ Замовлення прийнято! Скоро зв'яжемось.");
+      const parts = text.split(",").map((x) => x.trim());
 
+      const order = {
+        name: parts[0] || "",
+        phone: parts[1] || "",
+        city: parts[2] || "",
+        branch: parts[3] || "",
+        product: parts[4] || ""
+      };
+
+      // запис у Google Sheets
+      await fetch(SHEET_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(order)
+      });
+
+      // клієнту
+      await sendMessage(
+        chatId,
+        "✅ Замовлення прийнято! Менеджер перевірить заявку та зв'яжеться з вами."
+      );
+
+      // тобі
       await sendMessage(
         ADMIN_ID,
         `🆕 НОВЕ ЗАМОВЛЕННЯ
 
-${text}`
+👤 ${order.name}
+📞 ${order.phone}
+🏙 ${order.city}
+📦 Відділення: ${order.branch}
+🛡 Товар: ${order.product}`
       );
     }
   }
