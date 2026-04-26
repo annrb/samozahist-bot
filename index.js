@@ -9,15 +9,19 @@ const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
 
 const ADMIN_ID = 455696990;
 
-const PRODUCTS = [
-  "КОБРА-1 МВС — 300 грн",
-  "КОБРА-1Н 100 мл — 250 грн",
-  "ТЕРЕН-4 — 250 грн",
-  "ТРИЗУБ-4 — 250 грн",
-  "КОБРА-1Н 50 мл — 200 грн"
-];
+const PRODUCTS = `
+🔥 Наш асортимент:
 
-// старт
+1) КОБРА-1 МВС — 300 грн
+2) КОБРА-1Н 100 мл — 250 грн
+3) ТЕРЕН-4 — 250 грн
+4) ТРИЗУБ-4 (струйний) — 250 грн
+5) КОБРА-1Н 50 мл — 200 грн
+
+Для замовлення напишіть:
+ПІБ, телефон, місто, № відділення, товар
+`;
+
 app.post("/", async (req, res) => {
   const body = req.body;
 
@@ -26,31 +30,42 @@ app.post("/", async (req, res) => {
     const text = body.message.text;
 
     if (text === "/start") {
-      await sendMessage(chatId, `🔥 САМОЗАХИСТ UA
-
-Оберіть дію:`, {
-        keyboard: [
-          ["🛒 Асортимент"],
-          ["💬 Консультант"]
-        ],
-        resize_keyboard: true
-      });
+      await sendMessage(
+        chatId,
+        "🔥 САМОЗАХИСТ UA | Засоби самозахисту | Перцеві балони\n\nОберіть дію:",
+        {
+          reply_markup: {
+            keyboard: [
+              [{ text: "🛒 Асортимент" }],
+              [{ text: "💬 Консультант" }]
+            ],
+            resize_keyboard: true
+          }
+        }
+      );
     }
 
     if (text === "🛒 Асортимент") {
-      await sendMessage(chatId, PRODUCTS.join("\n"));
+      await sendMessage(chatId, PRODUCTS);
     }
 
     if (text === "💬 Консультант") {
       await sendMessage(chatId, "Напишіть менеджеру: @annrb");
     }
 
-    // замовлення
-    if (text && text.includes(",")) {
-      await sendMessage(chatId, "✅ Замовлення прийнято!");
+    // будь-яке повідомлення з комами = замовлення
+    if (
+      text &&
+      text.includes(",") &&
+      text !== "/start" &&
+      text !== "🛒 Асортимент" &&
+      text !== "💬 Консультант"
+    ) {
+      await sendMessage(chatId, "✅ Замовлення прийнято! Скоро зв'яжемось.");
 
-      await sendMessage(ADMIN_ID,
-        `🆕 Нове замовлення:\n${text}`
+      await sendMessage(
+        ADMIN_ID,
+        `🆕 НОВЕ ЗАМОВЛЕННЯ\n\n${text}`
       );
     }
   }
@@ -61,7 +76,9 @@ app.post("/", async (req, res) => {
 async function sendMessage(chatId, text, extra = {}) {
   await fetch(`${TELEGRAM_API}/sendMessage`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       chat_id: chatId,
       text,
@@ -75,4 +92,6 @@ app.get("/", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server started"));
+app.listen(PORT, () => {
+  console.log("Server started");
+});
