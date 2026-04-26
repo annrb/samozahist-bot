@@ -9,9 +9,7 @@ const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
 const ADMIN_ID = 455696990;
 
 // URL Google Sheets webhook
-const SHEET_URL =
-  "https://script.google.com/macros/s/AKfycbxbt-IkoBVsG1nsspQmkGQ49qhmpSB_vw6llTzJXwRIrVHVtT0QaegT6pob07zfWYNh/exec";
-
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxbt-IkoBVsG1nsspQmkGQ49qhmpSB_vw6llTzJXwRIrVHVtT0QaegT6pob07zfWYNh/exec";
 const PRODUCTS = `
 🔥 Наш асортимент:
 
