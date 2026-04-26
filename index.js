@@ -90,17 +90,56 @@ app.post("/", async (req, res) => {
 
     // теплий лід
     if (text === "+") {
-      await sendMessage(
-        chatId,
-        "💬 Напишіть коротко, для чого потрібен засіб самозахисту (місто / авто / для дівчини / інше), і менеджер підкаже найкращий варіант."
-      );
+      if (text === "+") {
+  const username = msg.from.username
+    ? "@" + msg.from.username
+    : "немає";
 
-      await sendMessage(
-        ADMIN_ID,
-        `🔥 Новий теплий лід\nКлієнт написав "+" (ID: ${chatId})`
-      );
-    }
+  const firstName = msg.from.first_name || "Без імені";
 
+  // відповідь клієнту
+  await sendMessage(
+    chatId,
+    "💬 Напишіть коротко, для чого потрібен засіб самозахисту (місто / авто / для дівчини / інше), і менеджер підкаже найкращий варіант."
+  );
+
+  // повідомлення адміну
+  await sendMessage(
+    ADMIN_ID,
+    `🔥 Новий теплий лід
+
+👤 Ім'я: ${firstName}
+🔗 Username: ${username}
+🆔 ID: ${chatId}`
+  );
+
+  // форвард повідомлення клієнта
+  await fetch(`${TELEGRAM_API}/forwardMessage`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: ADMIN_ID,
+      from_chat_id: chatId,
+      message_id: msg.message_id
+    })
+  });
+
+  // запис у CRM
+  await fetch(SHEET_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      type: "lead",
+      name: firstName,
+      username: username,
+      telegramId: chatId
+    })
+  });
+}
     // Фото/відео відгук
     if (waitingReview.has(chatId) && (msg.photo || msg.video)) {
       waitingReview.delete(chatId);
