@@ -380,6 +380,19 @@ app.post("/", async (req, res) => {
         delivery: parts[3],
         product: parts.slice(4).join(", ")
       };
+      const cleanPhone = order.phone.replace(/\D/g, "");
+
+const validPhone =
+  /^0\d{9}$/.test(cleanPhone) ||
+  /^380\d{9}$/.test(cleanPhone);
+
+if (!validPhone) {
+  await sendMessage(
+    chatId,
+    "❌ Невірний номер телефону.\n\nПриклад: 0971234567 або +380971234567"
+  );
+  return;
+}
 
       await Promise.all([
         sendMessage(
