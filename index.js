@@ -114,11 +114,13 @@ app.post("/", async (req, res) => {
   const user = getUserData(msg, source);
 
   // створення / оновлення ліда у фоні
+  if (text.startsWith("/start") || text === "Привіт") {
   updateCRM({
     ...user,
     status: "🔴 Новий лід",
     comment: "Зайшов у бот"
   });
+}
 
   // +
   if (text === "+") {
