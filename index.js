@@ -469,12 +469,8 @@ updateCRM({
   status: "🟡 Цікавився",
   comment: "Потрібна консультація"
 });
-    }
 
-    return;
-  }
-});
-
+return;
 app.get("/", (req, res) => {
   res.send("BOT WORKING");
 });
