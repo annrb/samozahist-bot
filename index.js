@@ -62,7 +62,7 @@ function getUserData(msg, source = "telegram") {
   return {
     name: msg.from.first_name || "Без імені",
     username,
-    telegramId: msg.chat.id,
+    telegramId: String(msg.from.id),
     profile,
     source
   };
