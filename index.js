@@ -413,7 +413,7 @@ if (!validPhone) {
 
       updateCRM({
         ...user,
-        phone: order.phone,
+        phone: cleanPhone,
         city: order.city,
         delivery: order.delivery,
         product: order.product,
