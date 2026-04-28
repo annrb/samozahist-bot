@@ -11,54 +11,77 @@ const ADMIN_ID = 455696990;
 const SHEET_URL =
   "https://script.google.com/macros/s/AKfycbxbt-IkoBVsG1nsspQmkGQ49qhmpSB_vw6llTzJXwRIrVHVtT0QaegT6pob07zfWYNh/exec";
 
-const PRODUCTS = `🔥 Наш асортимент:
-
-1) КОБРА-1 МВС — 300 грн
-2) КОБРА-1Н 100 мл — 250 грн
-3) ТЕРЕН-4 — 250 грн
-4) ТРИЗУБ-4 (струйний) — 250 грн
-5) КОБРА-1Н 50 мл — 200 грн`;
-
-const ORDER_TEXT = `📝 Для замовлення надішліть ОДНИМ повідомленням:
-
-ПІБ, телефон, місто, № відділення Нової пошти, товар
-
-Приклад:
-Іван Петренко, 0971234567, Львів, 12, КОБРА-1 МВС`;
-
-const PAYMENT_TEXT = `💳 Оплата
-
-Отримувач: Ковальчук О.Л.
-Передоплата: 100 грн або повна оплата
-
-Оберіть дію нижче 👇`;
-
-const PROMO_TEXT = `🔥 АКЦІЇ / НОВИНКИ
-
-🆕 Свіжа поставка КОБРА-1 МВС — в наявності!
-💰 Ціна: 300 грн
-
-✅ КОБРА-1Н 50 мл — 200 грн (замість 240 грн)
-
-📦 Швидка відправка Новою поштою
-🛡 Оригінальна продукція
-💬 Консультація перед покупкою
-
-Для замовлення натисніть: 📝 Оформити замовлення`;
-
-const REVIEW_TEXT = `📸 Надішліть фото або відео з вашим відгуком.
-Нам дуже цінний ваш фідбек ❤️`;
-
-const subscribers = new Set();
 const waitingReview = new Set();
 const waitingPaymentProof = new Set();
+const selectedPayment = new Map();
+
+function sourceFromText(text) {
+  if (text && text.startsWith("/start ")) {
+    const src = text.replace("/start ", "").trim().toLowerCase();
+    if (["instagram", "tiktok", "site", "telegram"].includes(src)) return src;
+  }
+  return "telegram";
+}
+
+async function updateCRM(data) {
+  await fetch(SHEET_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+}
+
+async function sendMessage(chatId, text, extra = {}) {
+  await fetch(`${TELEGRAM_API}/sendMessage`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text,
+      ...extra
+    })
+  });
+}
+
+async function forwardMessage(chatId, fromChatId, messageId) {
+  await fetch(`${TELEGRAM_API}/forwardMessage`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: chatId,
+      from_chat_id: fromChatId,
+      message_id: messageId
+    })
+  });
+}
+
+function getUserData(msg, source = "telegram") {
+  const username = msg.from.username ? "@" + msg.from.username : "немає";
+  const profile = msg.from.username
+    ? `https://t.me/${msg.from.username}`
+    : "";
+
+  return {
+    name: msg.from.first_name || "Без імені",
+    username,
+    telegramId: msg.chat.id,
+    profile,
+    source
+  };
+}
 
 function mainKeyboard() {
   return {
     keyboard: [
       [{ text: "🛒 Асортимент" }],
       [{ text: "📝 Оформити замовлення" }],
-      [{ text: "💳 Оплата" }],
+      [{ text: "💳 Оплата / доставка" }],
       [{ text: "💬 Консультант" }],
       [{ text: "📣 Акції / новинки" }],
       [{ text: "🖼 Наші фото / відгуки" }],
@@ -72,6 +95,8 @@ function mainKeyboard() {
 function paymentKeyboard() {
   return {
     keyboard: [
+      [{ text: "1️⃣ Повна оплата" }],
+      [{ text: "2️⃣ Накладний платіж (передоплата 100 грн)" }],
       [{ text: "📋 Скопіювати реквізити" }],
       [{ text: "📸 Надіслати скрін оплати" }],
       [{ text: "⬅️ Назад" }]
@@ -82,197 +107,241 @@ function paymentKeyboard() {
 
 app.post("/", async (req, res) => {
   const body = req.body;
+  if (!body.message) return res.sendStatus(200);
 
-  if (body.message) {
-    const msg = body.message;
-    const chatId = msg.chat.id;
-    const text = msg.text || "";
+  const msg = body.message;
+  const chatId = msg.chat.id;
+  const text = msg.text || "";
+  const source = sourceFromText(text);
+  const user = getUserData(msg, source);
 
-    // теплий лід
-    if (text === "+") {
-  const username = msg.from.username
-    ? "@" + msg.from.username
-    : "немає";
-
-  const firstName = msg.from.first_name || "Без імені";
-
-  // відповідь клієнту
-  await sendMessage(
-    chatId,
-    "💬 Напишіть коротко, для чого потрібен засіб самозахисту (місто / авто / для дівчини / інше), і менеджер підкаже найкращий варіант."
-  );
-
-  // повідомлення адміну
-  await sendMessage(
-    ADMIN_ID,
-    `🔥 Новий теплий лід
-
-👤 Ім'я: ${firstName}
-🔗 Username: ${username}
-🆔 ID: ${chatId}`
-  );
-
-  // форвард повідомлення клієнта
-  await fetch(`${TELEGRAM_API}/forwardMessage`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      chat_id: ADMIN_ID,
-      from_chat_id: chatId,
-      message_id: msg.message_id
-    })
+  // будь-яка дія = оновлення/створення ліда
+  await updateCRM({
+    ...user,
+    status: "🔴 Новий лід",
+    comment: "Зайшов у бот"
   });
 
-  // запис у CRM
-  await fetch(SHEET_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      type: "lead",
-      name: firstName,
-      username: username,
-      telegramId: chatId
-    })
-  });
-}
-    // Фото/відео відгук
-    if (waitingReview.has(chatId) && (msg.photo || msg.video)) {
-      waitingReview.delete(chatId);
+  // +
+  if (text === "+") {
+    await sendMessage(
+      chatId,
+      "💬 Напишіть коротко, для чого потрібен засіб самозахисту, і менеджер підкаже найкращий варіант."
+    );
 
-      await sendMessage(chatId, "❤️ Дякуємо за ваш відгук!", {
-        reply_markup: mainKeyboard()
-      });
+    await sendMessage(
+      ADMIN_ID,
+      `🔥 Новий теплий лід
 
-      await sendMessage(
-        ADMIN_ID,
-        `📸 Новий фото-відгук від клієнта (ID: ${chatId})`
-      );
-    }
+👤 ${user.name}
+🔗 ${user.username}
+🆔 ${chatId}`
+    );
 
-    // Скрін оплати
-    if (waitingPaymentProof.has(chatId) && (msg.photo || msg.document)) {
-      waitingPaymentProof.delete(chatId);
+    await forwardMessage(ADMIN_ID, chatId, msg.message_id);
 
-      await sendMessage(
-        chatId,
-        "✅ Скрін оплати отримано. Менеджер перевірить оплату.",
-        { reply_markup: mainKeyboard() }
-      );
+    await updateCRM({
+      ...user,
+      status: "🟡 Цікавився",
+      comment: "Потрібна консультація"
+    });
+  }
 
-      await sendMessage(
-        ADMIN_ID,
-        `💳 Клієнт (ID: ${chatId}) надіслав скрін оплати`
-      );
-    }
+  // Фото-відгук
+  if (waitingReview.has(chatId) && (msg.photo || msg.video)) {
+    waitingReview.delete(chatId);
 
-    if (text === "/start") {
-      await sendMessage(
-        chatId,
-        `👋 Вітаємо в САМОЗАХИСТ UA
+    await sendMessage(chatId, "❤️ Дякуємо за відгук!", {
+      reply_markup: mainKeyboard()
+    });
 
-🛡 Допоможемо підібрати ідеальний засіб самозахисту саме для вас.
+    await sendMessage(ADMIN_ID, `📸 Новий фото-відгук від ${user.name}`);
+    await forwardMessage(ADMIN_ID, chatId, msg.message_id);
 
-Напишіть "+" у чат, якщо потрібна консультація, або оберіть кнопку нижче 👇`,
-        { reply_markup: mainKeyboard() }
-      );
-    }
+    await updateCRM({
+      ...user,
+      status: "🟡 Цікавився",
+      comment: "Надіслав фото-відгук"
+    });
+  }
 
-    if (text === "🛒 Асортимент") {
-      await sendMessage(chatId, PRODUCTS);
-    }
+  // Скрін оплати
+  if (waitingPaymentProof.has(chatId) && (msg.photo || msg.document)) {
+    waitingPaymentProof.delete(chatId);
 
-    if (text === "📝 Оформити замовлення") {
-      await sendMessage(chatId, ORDER_TEXT);
-    }
+    await sendMessage(
+      chatId,
+      "✅ Скрін отримано. Менеджер перевірить оплату.",
+      { reply_markup: mainKeyboard() }
+    );
 
-    if (text === "💳 Оплата") {
-      await sendMessage(chatId, PAYMENT_TEXT, {
-        reply_markup: paymentKeyboard()
-      });
-    }
+    await sendMessage(ADMIN_ID, `💳 Новий скрін оплати від ${user.name}`);
+    await forwardMessage(ADMIN_ID, chatId, msg.message_id);
 
-    if (text === "📋 Скопіювати реквізити") {
-      await sendMessage(chatId, "4441 **** **** 6972");
-    }
+    await updateCRM({
+      ...user,
+      payment: selectedPayment.get(chatId) || "",
+      status: "🔵 Очікує перевірки оплати",
+      comment: "Надіслав скрін оплати"
+    });
+  }
 
-    if (text === "📸 Надіслати скрін оплати") {
-      waitingPaymentProof.add(chatId);
-      await sendMessage(chatId, "Надішліть скрін оплати 📸");
-    }
+  // start
+  if (text.startsWith("/start")) {
+    await sendMessage(
+      chatId,
+      `👋 Вітаємо в САМОЗАХИСТ UA
 
-    if (text === "⬅️ Назад") {
-      await sendMessage(chatId, "Головне меню 👇", {
-        reply_markup: mainKeyboard()
-      });
-    }
+🛡 Допоможемо обрати засіб самозахисту.
 
-    if (text === "💬 Консультант") {
-      await sendMessage(chatId, "Напишіть менеджеру: @annrb");
-    }
+Напишіть "+" для консультації або оберіть кнопку 👇`,
+      { reply_markup: mainKeyboard() }
+    );
+  }
 
-    if (text === "📣 Акції / новинки") {
-      await sendMessage(chatId, PROMO_TEXT);
-    }
+  if (text === "🛒 Асортимент") {
+    await sendMessage(
+      chatId,
+      `🔥 Наш асортимент:
 
-    if (text === "🖼 Наші фото / відгуки") {
-      await sendMessage(
-        chatId,
-        "Наш канал з фото та відгуками:\nhttps://t.me/vidgyku_balonkastet"
-      );
-    }
+1) КОБРА-1 МВС — 300 грн
+2) КОБРА-1Н 100 мл — 250 грн
+3) ТЕРЕН-4 — 250 грн
+4) ТРИЗУБ-4 — 250 грн
+5) КОБРА-1Н 50 мл — 200 грн`
+    );
 
-    if (text === "📸 Скинути фото-відгук") {
-      waitingReview.add(chatId);
-      await sendMessage(chatId, REVIEW_TEXT);
-    }
+    await updateCRM({
+      ...user,
+      status: "🟡 Цікавився",
+      comment: "Дивився асортимент"
+    });
+  }
 
-    if (text === "✅ Підписатися на новини") {
-      subscribers.add(chatId);
-      await sendMessage(
-        chatId,
-        "✅ Ви підписались на новини\nПершими дізнаєтесь про нові поставки, акції та знижки."
-      );
-    }
+  if (text === "📝 Оформити замовлення") {
+    await sendMessage(
+      chatId,
+      `📝 Надішліть ОДНИМ повідомленням:
 
-    // Замовлення
-    if (
-      text &&
-      text.includes(",") &&
-      !text.startsWith("/") &&
-      !text.startsWith("🛒") &&
-      !text.startsWith("📝") &&
-      !text.startsWith("💳") &&
-      !text.startsWith("💬") &&
-      !text.startsWith("📣") &&
-      !text.startsWith("🖼") &&
-      !text.startsWith("📸") &&
-      !text.startsWith("✅") &&
-      !text.startsWith("📋") &&
-      !text.startsWith("⬅️")
-    ) {
-      const parts = text.split(",").map((x) => x.trim());
+ПІБ, телефон, місто, пункт доставки, товар
 
+Приклад:
+Іван Петренко, 0971234567, Львів, Поштомат 12, КОБРА-1 МВС`
+    );
+  }
+
+  if (text === "💳 Оплата / доставка") {
+    await sendMessage(
+      chatId,
+      `💳 Варіанти оплати та доставки
+
+1️⃣ Повна оплата на карту без переплати на пошті
+🤝 Нам довіряють 1400+ клієнтів
+🖼 Відгуки: @vidgyku_balonkastet
+
+2️⃣ Накладний платіж
+✅ Передоплата 100 грн
+📦 Решта — на пошті при отриманні
+
+Оберіть зручний варіант 👇`,
+      { reply_markup: paymentKeyboard() }
+    );
+
+    await updateCRM({
+      ...user,
+      status: "🟠 Готується до замовлення",
+      comment: "Дивився оплату / доставку"
+    });
+  }
+
+  if (text === "1️⃣ Повна оплата") {
+    selectedPayment.set(chatId, "Повна оплата");
+    await sendMessage(chatId, "✅ Ви обрали повну оплату");
+  }
+
+  if (text === "2️⃣ Накладний платіж (передоплата 100 грн)") {
+    selectedPayment.set(chatId, "Накладний платіж / передоплата 100 грн");
+    await sendMessage(chatId, "✅ Ви обрали накладний платіж");
+  }
+
+  if (text === "📋 Скопіювати реквізити") {
+    await sendMessage(chatId, "4441 **** **** 6972");
+  }
+
+  if (text === "📸 Надіслати скрін оплати") {
+    waitingPaymentProof.add(chatId);
+    await sendMessage(chatId, "Надішліть скрін оплати 📸");
+  }
+
+  if (text === "⬅️ Назад") {
+    await sendMessage(chatId, "Головне меню 👇", {
+      reply_markup: mainKeyboard()
+    });
+  }
+
+  if (text === "💬 Консультант") {
+    await sendMessage(chatId, "Напишіть менеджеру: @annrb");
+  }
+
+  if (text === "📣 Акції / новинки") {
+    await sendMessage(
+      chatId,
+      `🔥 АКЦІЇ / НОВИНКИ
+
+🆕 Свіжа поставка КОБРА-1 МВС — в наявності!
+💰 Ціна: 300 грн
+
+✅ КОБРА-1Н 50 мл — 200 грн`
+    );
+
+    await updateCRM({
+      ...user,
+      status: "🟡 Цікавився",
+      comment: "Цікавився акціями"
+    });
+  }
+
+  if (text === "🖼 Наші фото / відгуки") {
+    await sendMessage(chatId, "https://t.me/vidgyku_balonkastet");
+
+    await updateCRM({
+      ...user,
+      status: "🟡 Цікавився",
+      comment: "Дивився відгуки"
+    });
+  }
+
+  if (text === "📸 Скинути фото-відгук") {
+    waitingReview.add(chatId);
+    await sendMessage(chatId, "Надішліть фото або відео ❤️");
+  }
+
+  if (text === "✅ Підписатися на новини") {
+    await sendMessage(chatId, "✅ Ви підписались на новини");
+
+    await updateCRM({
+      ...user,
+      status: "🟡 Цікавився",
+      comment: "Підписався на новини"
+    });
+  }
+
+  // Замовлення
+  if (text.includes(",") && !text.startsWith("/")) {
+    const parts = text.split(",").map(x => x.trim());
+
+    if (parts.length >= 5) {
       const order = {
-        name: parts[0] || "",
-        phone: parts[1] || "",
-        city: parts[2] || "",
-        branch: parts[3] || "",
-        product: parts[4] || ""
+        name: parts[0],
+        phone: parts[1],
+        city: parts[2],
+        delivery: parts[3],
+        product: parts[4]
       };
 
-      await fetch(SHEET_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(order)
-      });
-
       await sendMessage(
         chatId,
-        "✅ Замовлення прийнято! Менеджер перевірить заявку та зв'яжеться з вами."
+        "✅ Замовлення прийнято! Менеджер зв'яжеться з вами."
       );
 
       await sendMessage(
@@ -282,26 +351,25 @@ app.post("/", async (req, res) => {
 👤 ${order.name}
 📞 ${order.phone}
 🏙 ${order.city}
-📦 Відділення: ${order.branch}
-🛡 Товар: ${order.product}`
+📦 ${order.delivery}
+🛡 ${order.product}`
       );
+
+      await updateCRM({
+        ...user,
+        phone: order.phone,
+        city: order.city,
+        delivery: order.delivery,
+        product: order.product,
+        payment: selectedPayment.get(chatId) || "",
+        status: "🟢 Замовлення",
+        comment: "Оформив замовлення"
+      });
     }
   }
 
   res.sendStatus(200);
 });
-
-async function sendMessage(chatId, text, extra = {}) {
-  await fetch(`${TELEGRAM_API}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text,
-      ...extra
-    })
-  });
-}
 
 app.get("/", (req, res) => {
   res.send("BOT WORKING");
