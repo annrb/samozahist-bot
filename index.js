@@ -340,7 +340,7 @@ app.post("/", async (req, res) => {
 }
     await sendMessage(chatId, "4441 1144 4890 6972");
     return;
-  }
+
 
   if (text === "📸 Надіслати скрін оплати") {
     waitingPaymentProof.add(chatId);
