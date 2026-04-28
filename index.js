@@ -289,20 +289,56 @@ app.post("/", async (req, res) => {
     return;
   }
 
-  if (text === "1️⃣ Повна оплата") {
-    selectedPayment.set(chatId, "Повна оплата");
-    await sendMessage(chatId, "✅ Ви обрали повну оплату");
+  if (
+  text === "💳 Повна оплата" ||
+  text === "📦 Передоплата 100 грн (решта на пошті)"
+) {
+  const order = pendingOrders.get(chatId);
+
+  if (!order) {
+    await sendMessage(chatId, "❌ Спочатку заповніть дані для замовлення.");
     return;
   }
 
-  if (text === "2️⃣ Накладний платіж (передоплата 100 грн)") {
-    selectedPayment.set(chatId, "Накладний платіж / передоплата 100 грн");
-    await sendMessage(chatId, "✅ Ви обрали накладний платіж");
-    return;
-  }
+  const payment =
+    text === "💳 Повна оплата"
+      ? "Повна оплата"
+      : "Передоплата 100 грн / решта на пошті";
 
-  if (text === "📋 Скопіювати реквізити") {
-    await sendMessage(chatId, "4441 **** **** 6972");
+  await Promise.all([
+    sendMessage(
+      chatId,
+      "✅ Замовлення прийнято! Менеджер зв'яжеться з вами.",
+      { reply_markup: mainKeyboard() }
+    ),
+    sendMessage(
+      ADMIN_ID,
+      `🆕 НОВЕ ЗАМОВЛЕННЯ
+
+👤 ${order.name}
+📞 ${order.phone}
+🏙 ${order.city}
+📦 ${order.delivery}
+🛡 ${order.product}
+💰 ${payment}`
+    )
+  ]);
+
+  updateCRM({
+    ...user,
+    phone: order.phone,
+    city: order.city,
+    delivery: order.delivery,
+    product: order.product,
+    payment,
+    status: "🟢 Замовлення",
+    comment: "Оформив замовлення"
+  });
+
+  pendingOrders.delete(chatId);
+  return;
+}
+    await sendMessage(chatId, "4441 1144 4890 6972");
     return;
   }
 
