@@ -187,17 +187,44 @@ app.post("/", async (req, res) => {
   }
 
   // start
-  if (text.startsWith("/start")) {
-    await sendMessage(
-      chatId,
-      `👋 Вітаємо в САМОЗАХИСТ UA
+  const isOrderMessage =
+  text.includes(",") &&
+  text.split(",").length >= 5;
+
+const isMenuButton = [
+  "🛒 Асортимент",
+  "📝 Оформити замовлення",
+  "💳 Оплата / доставка",
+  "💬 Консультант",
+  "📣 Акції / новинки",
+  "🖼 Наші фото / відгуки",
+  "📸 Скинути фото-відгук",
+  "✅ Підписатися на новини",
+  "1️⃣ Повна оплата",
+  "2️⃣ Накладний платіж (передоплата 100 грн)",
+  "📋 Скопіювати реквізити",
+  "📸 Надіслати скрін оплати",
+  "⬅️ Назад",
+  "+"
+].includes(text);
+
+if (
+  !isMenuButton &&
+  !isOrderMessage &&
+  !msg.photo &&
+  !msg.video &&
+  !msg.document
+) {
+  await sendMessage(
+    chatId,
+    `👋 Вітаємо в САМОЗАХИСТ UA
 
 🛡 Допоможемо обрати засіб самозахисту.
 
 Напишіть "+" для консультації або оберіть кнопку 👇`,
-      { reply_markup: mainKeyboard() }
-    );
-  }
+    { reply_markup: mainKeyboard() }
+  );
+}
 
   if (text === "🛒 Асортимент") {
     await sendMessage(
