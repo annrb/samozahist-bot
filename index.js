@@ -114,7 +114,11 @@ app.post("/", async (req, res) => {
   const user = getUserData(msg, source);
 
   // створення / оновлення ліда у фоні
-  if (text.startsWith("/start") || text === "Привіт" || text === "Вітаю") {
+  if (
+  text.startsWith("/start") ||
+  ["привіт", "добрий день", "доброго дня", "вітаю", "hello", "hi"]
+    .includes(text.toLowerCase().trim())
+) {
   await sendMessage(
     chatId,
     `👋 Вітаємо в САМОЗАХИСТ UA
