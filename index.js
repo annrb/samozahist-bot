@@ -90,7 +90,6 @@ app.post("/", async (req, res) => {
 
     // теплий лід
     if (text === "+") {
-      if (text === "+") {
   const username = msg.from.username
     ? "@" + msg.from.username
     : "немає";
