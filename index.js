@@ -24,9 +24,13 @@ function sourceFromText(text) {
 }
 
 function updateCRM(data) {
+  console.log("CRM DATA:", JSON.stringify(data));
+
   fetch(SHEET_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(data)
   }).catch(console.error);
 }
