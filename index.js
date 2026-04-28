@@ -421,7 +421,7 @@ app.post("/", async (req, res) => {
         forwardMessage(ADMIN_ID, chatId, msg.message_id)
       ]);
 
-      updateCRM({
+      await updateCRM({
         ...user,
         status: "🟡 Цікавився",
         comment: "Потрібна консультація"
