@@ -375,45 +375,52 @@ app.post("/", async (req, res) => {
   if (!isMenuButton && !msg.photo && !msg.video && !msg.document) {
     const parts = text.split(",").map(x => x.trim());
 
-    // правильний формат замовлення
-    if (parts.length >= 5) {
-      const order = {
-        name: parts[0],
-        phone: parts[1],
-        city: parts[2],
-        delivery: parts[3],
-        product: parts.slice(4).join(", ")
-      };
-      const cleanPhone = order.phone.replace(/\D/g, "");
+// правильний формат замовлення
+if (parts.length >= 5) {
+  const order = {
+    name: parts[0],
+    phone: parts[1],
+    city: parts[2],
+    delivery: parts[3],
+    product: parts.slice(4).join(", ")
+  };
 
-const validPhone =
-  /^0\d{9}$/.test(cleanPhone) ||
-  /^380\d{9}$/.test(cleanPhone);
+  const cleanPhone = order.phone.replace(/\D/g, "");
 
-if (!validPhone) {
+  const validPhone =
+    /^0\d{9}$/.test(cleanPhone) ||
+    /^380\d{9}$/.test(cleanPhone);
+
+  if (!validPhone) {
+    await sendMessage(
+      chatId,
+      "❌ Невірний номер телефону.\n\nПриклад: 0971234567 або +380971234567"
+    );
+    return;
+  }
+
+  // зберігаємо замовлення тимчасово
+  pendingOrders.set(chatId, {
+    ...order,
+    phone: cleanPhone
+  });
+
+  // показуємо вибір оплати
   await sendMessage(
     chatId,
-    "❌ Невірний номер телефону.\n\nПриклад: 0971234567 або +380971234567"
+    "💳 Оберіть спосіб оплати:",
+    {
+      keyboard: [
+        [{ text: "💳 Повна оплата" }],
+        [{ text: "📦 Передоплата 100 грн (решта на пошті)" }]
+      ],
+      resize_keyboard: true
+    }
   );
+
   return;
-}
 
-      await Promise.all([
-        sendMessage(
-          chatId,
-          "✅ Замовлення прийнято! Менеджер зв'яжеться з вами."
-        ),
-        sendMessage(
-          ADMIN_ID,
-          `🆕 НОВЕ ЗАМОВЛЕННЯ
-
-👤 ${order.name}
-📞 ${order.phone}
-🏙 ${order.city}
-📦 ${order.delivery}
-🛡 ${order.product}`
-        )
-      ]);
+} else {
 
       updateCRM({
         ...user,
