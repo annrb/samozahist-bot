@@ -215,20 +215,6 @@ app.post("/", async (req, res) => {
     "+"
   ].includes(text);
 
-  // welcome
-  if (!isMenuButton && !isOrderMessage && !msg.photo && !msg.video && !msg.document) {
-    await sendMessage(
-      chatId,
-      `👋 Вітаємо в САМОЗАХИСТ UA
-
-🛡 Допоможемо обрати засіб самозахисту.
-
-Напишіть "+" для консультації або оберіть кнопку 👇`,
-      { reply_markup: mainKeyboard() }
-    );
-    return;
-  }
-
   if (text === "🛒 Асортимент") {
     await sendMessage(
       chatId,
