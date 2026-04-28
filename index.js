@@ -411,7 +411,6 @@ app.post("/", async (req, res) => {
   if (!isMenuButton && !msg.photo && !msg.video && !msg.document) {
     const parts = text.split(",").map(x => x.trim());
 
-// правильний формат замовлення
 if (parts.length >= 5) {
   const order = {
     name: parts[0],
@@ -422,7 +421,6 @@ if (parts.length >= 5) {
   };
 
   const cleanPhone = order.phone.replace(/\D/g, "");
-
   const validPhone =
     /^0\d{9}$/.test(cleanPhone) ||
     /^380\d{9}$/.test(cleanPhone);
@@ -435,55 +433,42 @@ if (parts.length >= 5) {
     return;
   }
 
-  // зберігаємо замовлення тимчасово
   pendingOrders.set(chatId, {
     ...order,
     phone: cleanPhone
   });
 
-  // показуємо вибір оплати
   await sendMessage(
     chatId,
     "💳 Оберіть спосіб оплати:",
     {
-      keyboard: [
-        [{ text: "💳 Повна оплата" }],
-        [{ text: "📦 Передоплата 100 грн (решта на пошті)" }]
-      ],
-      resize_keyboard: true
+      reply_markup: {
+        keyboard: [
+          [{ text: "💳 Повна оплата" }],
+          [{ text: "📦 Передоплата 100 грн (решта на пошті)" }]
+        ],
+        resize_keyboard: true
+      }
     }
   );
 
   return;
+}
 
-} else {
+// вільне повідомлення
+await Promise.all([
+  sendMessage(
+    chatId,
+    "✅ Менеджер отримав ваше повідомлення і скоро відповість 👍"
+  ),
+  forwardMessage(ADMIN_ID, chatId, msg.message_id)
+]);
 
-      updateCRM({
-        ...user,
-        phone: cleanPhone,
-        city: order.city,
-        delivery: order.delivery,
-        product: order.product,
-        payment: selectedPayment.get(chatId) || "",
-        status: "🟢 Замовлення",
-        comment: "Оформив замовлення"
-      });
-
-    } else {
-      // вільне повідомлення → менеджеру
-      await Promise.all([
-        sendMessage(
-          chatId,
-          "✅ Менеджер отримав ваше повідомлення і скоро відповість 👍"
-        ),
-        forwardMessage(ADMIN_ID, chatId, msg.message_id)
-      ]);
-
-      await updateCRM({
-        ...user,
-        status: "🟡 Цікавився",
-        comment: "Потрібна консультація"
-      });
+updateCRM({
+  ...user,
+  status: "🟡 Цікавився",
+  comment: "Потрібна консультація"
+});
     }
 
     return;
