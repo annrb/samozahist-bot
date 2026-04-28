@@ -472,6 +472,7 @@ updateCRM({
 
 return;
     });
+
 app.get("/", (req, res) => {
   res.send("BOT WORKING");
 });
