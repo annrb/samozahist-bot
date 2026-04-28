@@ -23,22 +23,18 @@ function sourceFromText(text) {
   return "telegram";
 }
 
-async function updateCRM(data) {
-  await fetch(SHEET_URL, {
+function updateCRM(data) {
+  fetch(SHEET_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
-  });
+  }).catch(console.error);
 }
 
 async function sendMessage(chatId, text, extra = {}) {
-  await fetch(`${TELEGRAM_API}/sendMessage`, {
+  return fetch(`${TELEGRAM_API}/sendMessage`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       chat_id: chatId,
       text,
@@ -48,11 +44,9 @@ async function sendMessage(chatId, text, extra = {}) {
 }
 
 async function forwardMessage(chatId, fromChatId, messageId) {
-  await fetch(`${TELEGRAM_API}/forwardMessage`, {
+  return fetch(`${TELEGRAM_API}/forwardMessage`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       chat_id: chatId,
       from_chat_id: fromChatId,
@@ -63,9 +57,7 @@ async function forwardMessage(chatId, fromChatId, messageId) {
 
 function getUserData(msg, source = "telegram") {
   const username = msg.from.username ? "@" + msg.from.username : "немає";
-  const profile = msg.from.username
-    ? `https://t.me/${msg.from.username}`
-    : "";
+  const profile = msg.from.username ? `https://t.me/${msg.from.username}` : "";
 
   return {
     name: msg.from.first_name || "Без імені",
@@ -106,8 +98,10 @@ function paymentKeyboard() {
 }
 
 app.post("/", async (req, res) => {
+  res.sendStatus(200); // відповідаємо Telegram одразу
+
   const body = req.body;
-  if (!body.message) return res.sendStatus(200);
+  if (!body.message) return;
 
   const msg = body.message;
   const chatId = msg.chat.id;
@@ -115,8 +109,8 @@ app.post("/", async (req, res) => {
   const source = sourceFromText(text);
   const user = getUserData(msg, source);
 
-  // будь-яка дія = оновлення/створення ліда
-  await updateCRM({
+  // створення / оновлення ліда у фоні
+  updateCRM({
     ...user,
     status: "🔴 Новий лід",
     comment: "Зайшов у бот"
@@ -129,22 +123,24 @@ app.post("/", async (req, res) => {
       "💬 Напишіть коротко, для чого потрібен засіб самозахисту, і менеджер підкаже найкращий варіант."
     );
 
-    await sendMessage(
-      ADMIN_ID,
-      `🔥 Новий теплий лід
+    await Promise.all([
+      sendMessage(
+        ADMIN_ID,
+        `🔥 Новий теплий лід
 
 👤 ${user.name}
 🔗 ${user.username}
 🆔 ${chatId}`
-    );
+      ),
+      forwardMessage(ADMIN_ID, chatId, msg.message_id)
+    ]);
 
-    await forwardMessage(ADMIN_ID, chatId, msg.message_id);
-
-    await updateCRM({
+    updateCRM({
       ...user,
       status: "🟡 Цікавився",
       comment: "Потрібна консультація"
     });
+    return;
   }
 
   // Фото-відгук
@@ -155,14 +151,17 @@ app.post("/", async (req, res) => {
       reply_markup: mainKeyboard()
     });
 
-    await sendMessage(ADMIN_ID, `📸 Новий фото-відгук від ${user.name}`);
-    await forwardMessage(ADMIN_ID, chatId, msg.message_id);
+    await Promise.all([
+      sendMessage(ADMIN_ID, `📸 Новий фото-відгук від ${user.name}`),
+      forwardMessage(ADMIN_ID, chatId, msg.message_id)
+    ]);
 
-    await updateCRM({
+    updateCRM({
       ...user,
       status: "🟡 Цікавився",
       comment: "Надіслав фото-відгук"
     });
+    return;
   }
 
   // Скрін оплати
@@ -175,56 +174,54 @@ app.post("/", async (req, res) => {
       { reply_markup: mainKeyboard() }
     );
 
-    await sendMessage(ADMIN_ID, `💳 Новий скрін оплати від ${user.name}`);
-    await forwardMessage(ADMIN_ID, chatId, msg.message_id);
+    await Promise.all([
+      sendMessage(ADMIN_ID, `💳 Новий скрін оплати від ${user.name}`),
+      forwardMessage(ADMIN_ID, chatId, msg.message_id)
+    ]);
 
-    await updateCRM({
+    updateCRM({
       ...user,
       payment: selectedPayment.get(chatId) || "",
       status: "🔵 Очікує перевірки оплати",
       comment: "Надіслав скрін оплати"
     });
+    return;
   }
 
-  // start
   const isOrderMessage =
-  text.includes(",") &&
-  text.split(",").length >= 5;
+    text.includes(",") &&
+    text.split(",").length >= 5;
 
-const isMenuButton = [
-  "🛒 Асортимент",
-  "📝 Оформити замовлення",
-  "💳 Оплата / доставка",
-  "💬 Консультант",
-  "📣 Акції / новинки",
-  "🖼 Наші фото / відгуки",
-  "📸 Скинути фото-відгук",
-  "✅ Підписатися на новини",
-  "1️⃣ Повна оплата",
-  "2️⃣ Накладний платіж (передоплата 100 грн)",
-  "📋 Скопіювати реквізити",
-  "📸 Надіслати скрін оплати",
-  "⬅️ Назад",
-  "+"
-].includes(text);
+  const isMenuButton = [
+    "🛒 Асортимент",
+    "📝 Оформити замовлення",
+    "💳 Оплата / доставка",
+    "💬 Консультант",
+    "📣 Акції / новинки",
+    "🖼 Наші фото / відгуки",
+    "📸 Скинути фото-відгук",
+    "✅ Підписатися на новини",
+    "1️⃣ Повна оплата",
+    "2️⃣ Накладний платіж (передоплата 100 грн)",
+    "📋 Скопіювати реквізити",
+    "📸 Надіслати скрін оплати",
+    "⬅️ Назад",
+    "+"
+  ].includes(text);
 
-if (
-  !isMenuButton &&
-  !isOrderMessage &&
-  !msg.photo &&
-  !msg.video &&
-  !msg.document
-) {
-  await sendMessage(
-    chatId,
-    `👋 Вітаємо в САМОЗАХИСТ UA
+  // welcome
+  if (!isMenuButton && !isOrderMessage && !msg.photo && !msg.video && !msg.document) {
+    await sendMessage(
+      chatId,
+      `👋 Вітаємо в САМОЗАХИСТ UA
 
 🛡 Допоможемо обрати засіб самозахисту.
 
 Напишіть "+" для консультації або оберіть кнопку 👇`,
-    { reply_markup: mainKeyboard() }
-  );
-}
+      { reply_markup: mainKeyboard() }
+    );
+    return;
+  }
 
   if (text === "🛒 Асортимент") {
     await sendMessage(
@@ -238,11 +235,12 @@ if (
 5) КОБРА-1Н 50 мл — 200 грн`
     );
 
-    await updateCRM({
+    updateCRM({
       ...user,
       status: "🟡 Цікавився",
       comment: "Дивився асортимент"
     });
+    return;
   }
 
   if (text === "📝 Оформити замовлення") {
@@ -253,8 +251,9 @@ if (
 ПІБ, телефон, місто, пункт доставки, товар
 
 Приклад:
-Іван Петренко, 0971234567, Львів, Поштомат 12, КОБРА-1 МВС`
+Іван Петренко, 0971234567, Львів, Поштомат 12, Кобра МВС x2 + Терен-4 x1`
     );
+    return;
   }
 
   if (text === "💳 Оплата / доставка") {
@@ -274,40 +273,47 @@ if (
       { reply_markup: paymentKeyboard() }
     );
 
-    await updateCRM({
+    updateCRM({
       ...user,
       status: "🟠 Готується до замовлення",
       comment: "Дивився оплату / доставку"
     });
+    return;
   }
 
   if (text === "1️⃣ Повна оплата") {
     selectedPayment.set(chatId, "Повна оплата");
     await sendMessage(chatId, "✅ Ви обрали повну оплату");
+    return;
   }
 
   if (text === "2️⃣ Накладний платіж (передоплата 100 грн)") {
     selectedPayment.set(chatId, "Накладний платіж / передоплата 100 грн");
     await sendMessage(chatId, "✅ Ви обрали накладний платіж");
+    return;
   }
 
   if (text === "📋 Скопіювати реквізити") {
     await sendMessage(chatId, "4441 **** **** 6972");
+    return;
   }
 
   if (text === "📸 Надіслати скрін оплати") {
     waitingPaymentProof.add(chatId);
     await sendMessage(chatId, "Надішліть скрін оплати 📸");
+    return;
   }
 
   if (text === "⬅️ Назад") {
     await sendMessage(chatId, "Головне меню 👇", {
       reply_markup: mainKeyboard()
     });
+    return;
   }
 
   if (text === "💬 Консультант") {
     await sendMessage(chatId, "Напишіть менеджеру: @annrb");
+    return;
   }
 
   if (text === "📣 Акції / новинки") {
@@ -321,57 +327,60 @@ if (
 ✅ КОБРА-1Н 50 мл — 200 грн`
     );
 
-    await updateCRM({
+    updateCRM({
       ...user,
       status: "🟡 Цікавився",
       comment: "Цікавився акціями"
     });
+    return;
   }
 
   if (text === "🖼 Наші фото / відгуки") {
     await sendMessage(chatId, "https://t.me/vidgyku_balonkastet");
 
-    await updateCRM({
+    updateCRM({
       ...user,
       status: "🟡 Цікавився",
       comment: "Дивився відгуки"
     });
+    return;
   }
 
   if (text === "📸 Скинути фото-відгук") {
     waitingReview.add(chatId);
     await sendMessage(chatId, "Надішліть фото або відео ❤️");
+    return;
   }
 
   if (text === "✅ Підписатися на новини") {
     await sendMessage(chatId, "✅ Ви підписались на новини");
 
-    await updateCRM({
+    updateCRM({
       ...user,
       status: "🟡 Цікавився",
       comment: "Підписався на новини"
     });
+    return;
   }
 
   // Замовлення
-  if (text.includes(",") && !text.startsWith("/")) {
+  if (isOrderMessage && !text.startsWith("/")) {
     const parts = text.split(",").map(x => x.trim());
 
-    if (parts.length >= 5) {
-      const order = {
-        name: parts[0],
-        phone: parts[1],
-        city: parts[2],
-        delivery: parts[3],
-        product: parts[4]
-      };
+    const order = {
+      name: parts[0],
+      phone: parts[1],
+      city: parts[2],
+      delivery: parts[3],
+      product: parts.slice(4).join(", ")
+    };
 
-      await sendMessage(
+    await Promise.all([
+      sendMessage(
         chatId,
         "✅ Замовлення прийнято! Менеджер зв'яжеться з вами."
-      );
-
-      await sendMessage(
+      ),
+      sendMessage(
         ADMIN_ID,
         `🆕 НОВЕ ЗАМОВЛЕННЯ
 
@@ -380,22 +389,20 @@ if (
 🏙 ${order.city}
 📦 ${order.delivery}
 🛡 ${order.product}`
-      );
+      )
+    ]);
 
-      await updateCRM({
-        ...user,
-        phone: order.phone,
-        city: order.city,
-        delivery: order.delivery,
-        product: order.product,
-        payment: selectedPayment.get(chatId) || "",
-        status: "🟢 Замовлення",
-        comment: "Оформив замовлення"
-      });
-    }
+    updateCRM({
+      ...user,
+      phone: order.phone,
+      city: order.city,
+      delivery: order.delivery,
+      product: order.product,
+      payment: selectedPayment.get(chatId) || "",
+      status: "🟢 Замовлення",
+      comment: "Оформив замовлення"
+    });
   }
-
-  res.sendStatus(200);
 });
 
 app.get("/", (req, res) => {
