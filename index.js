@@ -369,45 +369,66 @@ app.post("/", async (req, res) => {
     return;
   }
 
-  // Замовлення
-  if (isOrderMessage && !text.startsWith("/")) {
+    // Замовлення / вільне повідомлення
+  if (!isMenuButton && !msg.photo && !msg.video && !msg.document) {
     const parts = text.split(",").map(x => x.trim());
 
-    const order = {
-      name: parts[0],
-      phone: parts[1],
-      city: parts[2],
-      delivery: parts[3],
-      product: parts.slice(4).join(", ")
-    };
+    // правильний формат замовлення
+    if (parts.length >= 5) {
+      const order = {
+        name: parts[0],
+        phone: parts[1],
+        city: parts[2],
+        delivery: parts[3],
+        product: parts.slice(4).join(", ")
+      };
 
-    await Promise.all([
-      sendMessage(
-        chatId,
-        "✅ Замовлення прийнято! Менеджер зв'яжеться з вами."
-      ),
-      sendMessage(
-        ADMIN_ID,
-        `🆕 НОВЕ ЗАМОВЛЕННЯ
+      await Promise.all([
+        sendMessage(
+          chatId,
+          "✅ Замовлення прийнято! Менеджер зв'яжеться з вами."
+        ),
+        sendMessage(
+          ADMIN_ID,
+          `🆕 НОВЕ ЗАМОВЛЕННЯ
 
 👤 ${order.name}
 📞 ${order.phone}
 🏙 ${order.city}
 📦 ${order.delivery}
 🛡 ${order.product}`
-      )
-    ]);
+        )
+      ]);
 
-    updateCRM({
-      ...user,
-      phone: order.phone,
-      city: order.city,
-      delivery: order.delivery,
-      product: order.product,
-      payment: selectedPayment.get(chatId) || "",
-      status: "🟢 Замовлення",
-      comment: "Оформив замовлення"
-    });
+      updateCRM({
+        ...user,
+        phone: order.phone,
+        city: order.city,
+        delivery: order.delivery,
+        product: order.product,
+        payment: selectedPayment.get(chatId) || "",
+        status: "🟢 Замовлення",
+        comment: "Оформив замовлення"
+      });
+
+    } else {
+      // вільне повідомлення → менеджеру
+      await Promise.all([
+        sendMessage(
+          chatId,
+          "✅ Менеджер отримав ваше повідомлення і скоро відповість 👍"
+        ),
+        forwardMessage(ADMIN_ID, chatId, msg.message_id)
+      ]);
+
+      updateCRM({
+        ...user,
+        status: "🟡 Цікавився",
+        comment: "Потрібна консультація"
+      });
+    }
+
+    return;
   }
 });
 
