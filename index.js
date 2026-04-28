@@ -114,12 +114,24 @@ app.post("/", async (req, res) => {
   const user = getUserData(msg, source);
 
   // створення / оновлення ліда у фоні
-  if (text.startsWith("/start") || text === "Привіт") {
+  if (text.startsWith("/start") || text === "Привіт" || text === "Вітаю") {
+  await sendMessage(
+    chatId,
+    `👋 Вітаємо в САМОЗАХИСТ UA
+
+🛡 Допоможемо обрати засіб самозахисту.
+
+Напишіть "+" для консультації або оберіть кнопку 👇`,
+    { reply_markup: mainKeyboard() }
+  );
+
   updateCRM({
     ...user,
     status: "🔴 Новий лід",
     comment: "Зайшов у бот"
   });
+
+  return;
 }
 
   // +
