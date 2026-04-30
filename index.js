@@ -435,20 +435,7 @@ if (parts.length >= 5) {
     phone: cleanPhone
   });
 
-  await sendMessage(
-  chatId,
-  "💳 Оберіть спосіб оплати:",
-  {
-    reply_markup: {
-      keyboard: [
-        [{ text: "1️⃣ Повна оплата" }],
-        [{ text: "2️⃣ Накладний платіж (передоплата 100 грн)" }]
-      ],
-      resize_keyboard: true
-    }
-  }
-);
-
+  await sendMessage(chatId, "ТЕСТ ОПЛАТИ");
   return;
 }
 
