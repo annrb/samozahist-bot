@@ -290,7 +290,7 @@ app.post("/", async (req, res) => {
   }
 
   if (
-  text === "1️⃣ Повна оплата"
+  text === "1️⃣ Повна оплата" ||
   text === "2️⃣ Накладний платіж (передоплата 100 грн)"
 ) {
   const order = pendingOrders.get(chatId);
