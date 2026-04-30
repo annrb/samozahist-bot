@@ -405,7 +405,7 @@ app.post("/", async (req, res) => {
   }
 
     // Замовлення / вільне повідомлення
-  if (!isMenuButton && !msg.photo && !msg.video && !msg.document) {
+  if (isOrderMessage && !msg.photo && !msg.video && !msg.document) {
     const parts = text.split(",").map(x => x.trim());
 
 if (parts.length >= 5) {
