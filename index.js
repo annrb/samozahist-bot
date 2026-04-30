@@ -426,6 +426,8 @@ app.post("/", async (req, res) => {
     const validPhone =
       /^0\d{9}$/.test(cleanPhone) ||
       /^380\d{9}$/.test(cleanPhone);
+    
+    await sendMessage(chatId, "validPhone = " + validPhone);
 
     if (!validPhone) {
       await sendMessage(
@@ -439,6 +441,9 @@ app.post("/", async (req, res) => {
       ...order,
       phone: cleanPhone
     });
+    
+    await sendMessage(chatId, "DEBUG 7");
+    await sendMessage(chatId, "DEBUG 8");
 
     await sendMessage(chatId, "💳 Оберіть спосіб оплати:", {
       reply_markup: {
