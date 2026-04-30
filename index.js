@@ -338,10 +338,7 @@ app.post("/", async (req, res) => {
   pendingOrders.delete(chatId);
   return;
 }
-    await sendMessage(chatId, "4441 1144 4890 6972");
-    return;
-
-
+    
   if (text === "📸 Надіслати скрін оплати") {
     waitingPaymentProof.add(chatId);
     await sendMessage(chatId, "Надішліть скрін оплати 📸");
