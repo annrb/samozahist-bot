@@ -407,12 +407,9 @@ app.post("/", async (req, res) => {
 
     // Замовлення / вільне повідомлення
   if (isOrderMessage && !msg.photo && !msg.video && !msg.document) {
-    await sendMessage(chatId, "DEBUG 1");
   const parts = text.split(",").map(x => x.trim());
-    await sendMessage(chatId, "Частин: " + parts.length);
 
   if (parts.length >= 5) {
-    await sendMessage(chatId, "DEBUG 3");
     const order = {
       name: parts[0],
       phone: parts[1],
@@ -420,15 +417,12 @@ app.post("/", async (req, res) => {
       delivery: parts[3],
       product: parts.slice(4).join(", ")
     };
-    await sendMessage(chatId, "DEBUG 4");
 
     const cleanPhone = order.phone.replace(/\D/g, "");
-    await sendMessage(chatId, "Телефон: " + cleanPhone);
     const validPhone =
       /^0\d{9}$/.test(cleanPhone) ||
       /^380\d{9}$/.test(cleanPhone);
     
-    await sendMessage(chatId, "validPhone = " + validPhone);
 
     if (!validPhone) {
       await sendMessage(
@@ -442,9 +436,6 @@ app.post("/", async (req, res) => {
       ...order,
       phone: cleanPhone
     });
-    
-    await sendMessage(chatId, "DEBUG 7");
-    await sendMessage(chatId, "DEBUG 8");
 
     await sendMessage(chatId, "💳 Оберіть спосіб оплати:", {
       reply_markup: {
