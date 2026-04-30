@@ -205,10 +205,36 @@ const user = getUserData(msg, source);
       { reply_markup: mainKeyboard() }
     );
 
-    await Promise.all([
-      sendMessage(ADMIN_ID, `💳 Новий скрін оплати від ${user.name}`),
-      forwardMessage(ADMIN_ID, chatId, msg.message_id)
-    ]);
+    await forwardMessage(ADMIN_ID, chatId, msg.message_id);
+
+await sendMessage(
+  ADMIN_ID,
+  `💳 Новий скрін оплати від ${user.name}`,
+  {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "✅ Підтвердити оплату",
+            callback_data: `paid_${user.telegramId}`
+          }
+        ],
+        [
+          {
+            text: "🚚 Відправлено",
+            callback_data: `sent_${user.telegramId}`
+          }
+        ],
+        [
+          {
+            text: "❌ Проблема",
+            callback_data: `problem_${user.telegramId}`
+          }
+        ]
+      ]
+    }
+  }
+);
 
     updateCRM({
       ...user,
