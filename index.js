@@ -14,6 +14,7 @@ const SHEET_URL =
 const waitingReview = new Set();
 const waitingPaymentProof = new Set();
 const selectedPayment = new Map();
+const pendingOrders = new Map();
 
 function sourceFromText(text) {
   if (text && text.startsWith("/start ")) {
