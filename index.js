@@ -411,7 +411,9 @@ app.post("/", async (req, res) => {
     await sendMessage(chatId, "Частин: " + parts.length);
 
   if (parts.length >= 5) {
+    await sendMessage(chatId, "DEBUG 3");
     const order = {
+      await sendMessage(chatId, "DEBUG 4");
       name: parts[0],
       phone: parts[1],
       city: parts[2],
@@ -420,6 +422,7 @@ app.post("/", async (req, res) => {
     };
 
     const cleanPhone = order.phone.replace(/\D/g, "");
+    await sendMessage(chatId, "Телефон: " + cleanPhone);
     const validPhone =
       /^0\d{9}$/.test(cleanPhone) ||
       /^380\d{9}$/.test(cleanPhone);
