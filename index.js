@@ -236,12 +236,13 @@ await sendMessage(
   }
 );
 
-    updateCRM({
-      ...user,
-      payment: selectedPayment.get(chatId) || "",
-      status: "🔵 Очікує перевірки оплати",
-      comment: "Надіслав скрін оплати"
-    });
+   updateCRM({
+  ...user,
+  payment: selectedPayment.get(chatId) || "",
+  paymentStatus: "📸 Надіслав скрін",
+  status: "🔵 Очікує перевірки оплати",
+  comment: "Надіслав скрін оплати"
+});
     return;
   }
 
