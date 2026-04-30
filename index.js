@@ -406,9 +406,47 @@ app.post("/", async (req, res) => {
 
     // Замовлення / вільне повідомлення
   if (isOrderMessage && !msg.photo && !msg.video && !msg.document) {
-  await sendMessage(chatId, "Я зайшов у блок замовлення");
-  await sendMessage(chatId, "ТЕСТ 2");
-  return;
+  const parts = text.split(",").map(x => x.trim());
+
+  if (parts.length >= 5) {
+    const order = {
+      name: parts[0],
+      phone: parts[1],
+      city: parts[2],
+      delivery: parts[3],
+      product: parts.slice(4).join(", ")
+    };
+
+    const cleanPhone = order.phone.replace(/\D/g, "");
+    const validPhone =
+      /^0\d{9}$/.test(cleanPhone) ||
+      /^380\d{9}$/.test(cleanPhone);
+
+    if (!validPhone) {
+      await sendMessage(
+        chatId,
+        "❌ Невірний номер телефону.\n\nПриклад: 0971234567 або +380971234567"
+      );
+      return;
+    }
+
+    pendingOrders.set(chatId, {
+      ...order,
+      phone: cleanPhone
+    });
+
+    await sendMessage(chatId, "💳 Оберіть спосіб оплати:", {
+      reply_markup: {
+        keyboard: [
+          [{ text: "1️⃣ Повна оплата" }],
+          [{ text: "2️⃣ Накладний платіж (передоплата 100 грн)" }]
+        ],
+        resize_keyboard: true
+      }
+    });
+
+    return;
+  }
 }
 // вільне повідомлення
 await Promise.all([
