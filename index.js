@@ -413,13 +413,13 @@ app.post("/", async (req, res) => {
   if (parts.length >= 5) {
     await sendMessage(chatId, "DEBUG 3");
     const order = {
-      await sendMessage(chatId, "DEBUG 4");
       name: parts[0],
       phone: parts[1],
       city: parts[2],
       delivery: parts[3],
       product: parts.slice(4).join(", ")
     };
+    await sendMessage(chatId, "DEBUG 4");
 
     const cleanPhone = order.phone.replace(/\D/g, "");
     await sendMessage(chatId, "Телефон: " + cleanPhone);
