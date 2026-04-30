@@ -410,16 +410,6 @@ app.post("/", async (req, res) => {
   await sendMessage(chatId, "ТЕСТ 2");
   return;
 }
-
-  pendingOrders.set(chatId, {
-    ...order,
-    phone: cleanPhone
-  });
-
-  await sendMessage(chatId, "ТЕСТ ОПЛАТИ");
-  return;
-}
-
 // вільне повідомлення
 await Promise.all([
   sendMessage(
