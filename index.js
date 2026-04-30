@@ -106,13 +106,21 @@ app.post("/", async (req, res) => {
   res.sendStatus(200); // відповідаємо Telegram одразу
 
   const body = req.body;
-  if (!body.message) return;
 
-  const msg = body.message;
-  const chatId = msg.chat.id;
-  const text = msg.text || "";
-  const source = sourceFromText(text);
-  const user = getUserData(msg, source);
+// inline-кнопки
+if (body.callback_query) {
+  console.log("CALLBACK:", body.callback_query.data);
+  return;
+}
+
+// звичайні повідомлення
+if (!body.message) return;
+
+const msg = body.message;
+const chatId = msg.chat.id;
+const text = msg.text || "";
+const source = sourceFromText(text);
+const user = getUserData(msg, source);
 
   // створення / оновлення ліда у фоні
   if (
