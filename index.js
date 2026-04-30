@@ -406,7 +406,9 @@ app.post("/", async (req, res) => {
 
     // Замовлення / вільне повідомлення
   if (isOrderMessage && !msg.photo && !msg.video && !msg.document) {
+    await sendMessage(chatId, "DEBUG 1");
   const parts = text.split(",").map(x => x.trim());
+    await sendMessage(chatId, "Частин: " + parts.length);
 
   if (parts.length >= 5) {
     const order = {
