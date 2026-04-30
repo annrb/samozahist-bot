@@ -436,18 +436,18 @@ if (parts.length >= 5) {
   });
 
   await sendMessage(
-    chatId,
-    "💳 Оберіть спосіб оплати:",
-    {
-      reply_markup: {
-        keyboard: [
-          [{ text: "💳 Повна оплата" }],
-          [{ text: "📦 Передоплата 100 грн (решта на пошті)" }]
-        ],
-        resize_keyboard: true
-      }
+  chatId,
+  "💳 Оберіть спосіб оплати:",
+  {
+    reply_markup: {
+      keyboard: [
+        [{ text: "1️⃣ Повна оплата" }],
+        [{ text: "2️⃣ Накладний платіж (передоплата 100 грн)" }]
+      ],
+      resize_keyboard: true
     }
-  );
+  }
+);
 
   return;
 }
