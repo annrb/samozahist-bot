@@ -212,26 +212,20 @@ await sendMessage(
   `💳 Новий скрін оплати від ${user.name}`,
   {
     reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "✅ Підтвердити оплату",
-            callback_data: `paid_${user.telegramId}`
-          }
-        ],
-        [
-          {
-            text: "🚚 Відправлено",
-            callback_data: `sent_${user.telegramId}`
-          }
-        ],
-        [
-          {
-            text: "❌ Проблема",
-            callback_data: `problem_${user.telegramId}`
-          }
-        ]
-      ]
+  inline_keyboard: [
+  [
+    {
+      text: "✅ Підтвердити оплату",
+      callback_data: `paid_${user.telegramId}`
+    }
+  ],
+  [
+    {
+      text: "❌ Проблема",
+      callback_data: `problem_${user.telegramId}`
+    }
+  ]
+]
     }
   }
 );
