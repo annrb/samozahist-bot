@@ -406,6 +406,7 @@ app.post("/", async (req, res) => {
 
     // Замовлення / вільне повідомлення
   if (isOrderMessage && !msg.photo && !msg.video && !msg.document) {
+    await sendMessage(chatId, "Я зайшов у блок замовлення");
     const parts = text.split(",").map(x => x.trim());
 
 if (parts.length >= 5) {
