@@ -282,6 +282,78 @@ const user = getUserData(msg, source);
 
     return;
   }
+    // прийом поста для розсилки
+  const adminState = broadcastState.get(chatId);
+
+  if (
+    isAdmin(chatId) &&
+    adminState &&
+    adminState.step === "wait_post"
+  ) {
+    adminState.step = "confirm";
+    adminState.post = {
+      text: text || caption || "",
+      photo: msg.photo ? msg.photo[msg.photo.length - 1].file_id : null,
+      video: msg.video ? msg.video.file_id : null
+    };
+
+    broadcastState.set(chatId, adminState);
+
+    // прев’ю
+    if (adminState.post.photo) {
+      await fetch(`${TELEGRAM_API}/sendPhoto`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          photo: adminState.post.photo,
+          caption: adminState.post.text,
+          reply_markup: {
+            keyboard: [
+              [{ text: "✅ Розіслати" }],
+              [{ text: "❌ Скасувати" }]
+            ],
+            resize_keyboard: true
+          }
+        })
+      });
+    } else if (adminState.post.video) {
+      await fetch(`${TELEGRAM_API}/sendVideo`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          video: adminState.post.video,
+          caption: adminState.post.text,
+          reply_markup: {
+            keyboard: [
+              [{ text: "✅ Розіслати" }],
+              [{ text: "❌ Скасувати" }]
+            ],
+            resize_keyboard: true
+          }
+        })
+      });
+    } else {
+      await sendMessage(
+        chatId,
+        `📨 Прев’ю розсилки:
+
+${adminState.post.text}`,
+        {
+          reply_markup: {
+            keyboard: [
+              [{ text: "✅ Розіслати" }],
+              [{ text: "❌ Скасувати" }]
+            ],
+            resize_keyboard: true
+          }
+        }
+      );
+    }
+
+    return;
+  }
 
   // створення / оновлення ліда у фоні
   if (
