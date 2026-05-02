@@ -449,7 +449,7 @@ if (
   if (text === "📋 Скопіювати реквізити") {
   await sendMessage(chatId, "💳 Реквізити для оплати:");
 
-  await sendMessage(chatId, "4441 1144 4890 6972");
+  await sendMessage(chatId, "4441114448906972");
 
   await sendMessage(chatId, "Отримувач: Ковальчук О.");
 
