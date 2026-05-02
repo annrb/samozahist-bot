@@ -277,8 +277,8 @@ const user = getUserData(msg, source);
   ).length;
 
   const paid = rows.filter(x =>
-    String(x.paymentStatus || "").includes("Підтверджено")
-  ).length;
+  String(x.paymentStatus || "").includes("Оплату підтверджено")
+).length;
 
   const inTransit = rows.filter(x =>
     String(x.deliveryStatus || "").includes("Відправлено")
