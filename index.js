@@ -491,16 +491,24 @@ updateCRM({
     return;
   }
 
-  if (text === "✅ Підписатися на новини") {
-    await sendMessage(chatId, "✅ Ви підписались на новини");
+  if (text === "📢 Канал новин") {
+  await sendMessage(
+    chatId,
+    `📢 Наш офіційний канал новин:
 
-    updateCRM({
-      ...user,
-      status: "🟡 Цікавився",
-      comment: "Підписався на новини"
-    });
-    return;
-  }
+https://t.me/balon_kastet
+
+Підписуйтесь, щоб не пропустити новинки, акції та корисну інформацію 🔥`
+  );
+
+  updateCRM({
+    ...user,
+    status: "🟡 Цікавився",
+    comment: "Перейшов у канал новин"
+  });
+
+  return;
+}
 
   if (text === "📋 Скопіювати реквізити") {
   await sendMessage(chatId, "💳 Реквізити для оплати:");
