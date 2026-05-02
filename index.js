@@ -382,7 +382,40 @@ ${adminState.post.text}`,
     };
 
     // тимчасово — тест на себе
-    const targets = [String(ADMIN_ID)];
+    const response = await fetch(SHEET_URL);
+const rows = await response.json();
+
+let targets = [];
+
+if (state.audience === "👥 Всім") {
+  targets = rows
+    .map(x => String(x.telegramId || ""))
+    .filter(Boolean);
+}
+
+if (state.audience === "🛒 Покупцям") {
+  targets = rows
+    .filter(x => String(x.status || "").includes("Замовлення"))
+    .map(x => String(x.telegramId || ""))
+    .filter(Boolean);
+}
+
+if (state.audience === "⭐ Повторним клієнтам") {
+  targets = rows
+    .filter(x => String(x.status || "").includes("Повторний"))
+    .map(x => String(x.telegramId || ""))
+    .filter(Boolean);
+}
+
+if (state.audience === "👀 Цікавились") {
+  targets = rows
+    .filter(x => String(x.status || "").includes("Цікавився"))
+    .map(x => String(x.telegramId || ""))
+    .filter(Boolean);
+}
+
+// прибрати дублікати
+targets = [...new Set(targets)];
 
     let sent = 0;
     let failed = 0;
