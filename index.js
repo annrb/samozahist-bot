@@ -446,6 +446,16 @@ if (
     return;
   }
 
+  if (text === "📋 Скопіювати реквізити") {
+  await sendMessage(
+    chatId,
+    `💳 Реквізити для оплати:
+
+Номер карти: ТУТ_НОМЕР_КАРТИ
+Отримувач: ТВОЄ_ІМʼЯ`
+  );
+  return;
+}
     // Замовлення / вільне повідомлення
   if (isOrderMessage && !msg.photo && !msg.video && !msg.document) {
   const parts = text.split(",").map(x => x.trim());
