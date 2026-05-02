@@ -267,9 +267,10 @@ const user = getUserData(msg, source);
 
   const leads = rows.length;
 
-  const orders = rows.filter(x =>
-    String(x.status || "").includes("Замовлення")
-  ).length;
+  const orders = rows.filter(x => {
+  const s = String(x.status || "");
+  return s.includes("Замовлення") || s.includes("Повторний");
+}).length;
 
   const repeat = rows.filter(x =>
     String(x.status || "").includes("Повторний")
