@@ -200,6 +200,7 @@ if (!body.message) return;
 const msg = body.message;
 const chatId = msg.chat.id;
 const text = msg.text || "";
+  const caption = msg.caption || "";
 const source = sourceFromText(text);
 const user = getUserData(msg, source);
     // адмін-панель
