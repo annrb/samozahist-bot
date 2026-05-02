@@ -16,6 +16,37 @@ const waitingPaymentProof = new Set();
 const selectedPayment = new Map();
 const pendingOrders = new Map();
 
+const broadcastState = new Map();
+const adminMenuUsers = new Set();
+
+function isAdmin(chatId) {
+  return String(chatId) === String(ADMIN_ID);
+}
+
+function adminKeyboard() {
+  return {
+    keyboard: [
+      [{ text: "📣 Розсилка" }],
+      [{ text: "📊 Статистика" }],
+      [{ text: "🏠 Назад" }]
+    ],
+    resize_keyboard: true
+  };
+}
+
+function broadcastAudienceKeyboard() {
+  return {
+    keyboard: [
+      [{ text: "👥 Всім" }],
+      [{ text: "🛒 Покупцям" }],
+      [{ text: "⭐ Повторним клієнтам" }],
+      [{ text: "👀 Цікавились" }],
+      [{ text: "❌ Скасувати" }]
+    ],
+    resize_keyboard: true
+  };
+}
+
 function sourceFromText(text) {
   if (text && text.startsWith("/start ")) {
     const src = text.replace("/start ", "").trim().toLowerCase();
