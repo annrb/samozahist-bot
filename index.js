@@ -354,6 +354,90 @@ ${adminState.post.text}`,
 
     return;
   }
+    if (text === "✅ Розіслати" && isAdmin(chatId)) {
+    const state = broadcastState.get(chatId);
+
+    if (!state || state.step !== "confirm") {
+      await sendMessage(chatId, "❌ Немає підготовленої розсилки");
+      return;
+    }
+
+    await sendMessage(chatId, "🚀 Починаю розсилку...");
+
+    const sentKeyboard = {
+      inline_keyboard: [
+        [
+          {
+            text: "🛒 Оформити замовлення",
+            url: "https://t.me/samozahist_sales_bot"
+          }
+        ],
+        [
+          {
+            text: "📢 Наш канал",
+            url: "https://t.me/balon_kastet"
+          }
+        ]
+      ]
+    };
+
+    // тимчасово — тест на себе
+    const targets = [String(ADMIN_ID)];
+
+    let sent = 0;
+    let failed = 0;
+
+    for (const target of targets) {
+      try {
+        if (state.post.photo) {
+          await fetch(`${TELEGRAM_API}/sendPhoto`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: target,
+              photo: state.post.photo,
+              caption: state.post.text,
+              reply_markup: sentKeyboard
+            })
+          });
+        } else if (state.post.video) {
+          await fetch(`${TELEGRAM_API}/sendVideo`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              chat_id: target,
+              video: state.post.video,
+              caption: state.post.text,
+              reply_markup: sentKeyboard
+            })
+          });
+        } else {
+          await sendMessage(
+            target,
+            state.post.text,
+            { reply_markup: sentKeyboard }
+          );
+        }
+
+        sent++;
+      } catch (e) {
+        failed++;
+      }
+    }
+
+    broadcastState.delete(chatId);
+
+    await sendMessage(
+      chatId,
+      `✅ Розсилка завершена
+
+Надіслано: ${sent}
+Помилки: ${failed}`,
+      { reply_markup: adminKeyboard() }
+    );
+
+    return;
+  }
 
   // створення / оновлення ліда у фоні
   if (
