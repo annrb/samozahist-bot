@@ -262,26 +262,50 @@ const user = getUserData(msg, source);
     return;
   }
     if (text === "📊 Статистика" && isAdmin(chatId)) {
-    const response = await fetch(SHEET_URL);
-    const html = await response.text();
+  const response = await fetch(SHEET_URL);
+  const rows = await response.json();
 
-    await sendMessage(
-      chatId,
-      `📊 Статистика
+  const leads = rows.length;
 
-👥 Ліди: дивись у таблиці CRM
-🛒 Замовлення: дивись у CRM
-⭐ Повторні: дивись у CRM
-💰 Оплачені: дивись у CRM
-🚚 В дорозі: дивись у CRM
-✅ Отримано: дивись у CRM
-📸 Відгуки: дивись у CRM
+  const orders = rows.filter(x =>
+    String(x.status || "").includes("Замовлення")
+  ).length;
 
-(детальну автоматичну аналітику додамо наступним блоком)`
-    );
+  const repeat = rows.filter(x =>
+    String(x.status || "").includes("Повторний")
+  ).length;
 
-    return;
-  }
+  const paid = rows.filter(x =>
+    String(x.paymentStatus || "").includes("Підтверджено")
+  ).length;
+
+  const inTransit = rows.filter(x =>
+    String(x.deliveryStatus || "").includes("Відправлено")
+  ).length;
+
+  const received = rows.filter(x =>
+    String(x.deliveryStatus || "").includes("Отримано")
+  ).length;
+
+  const reviews = rows.filter(x =>
+    String(x.status || "").includes("відгук")
+  ).length;
+
+  await sendMessage(
+    chatId,
+`📊 Статистика
+
+👥 Лідів: ${leads}
+🛒 Замовлень: ${orders}
+⭐ Повторних: ${repeat}
+💰 Оплачено: ${paid}
+🚚 В дорозі: ${inTransit}
+✅ Отримано: ${received}
+📸 Відгуків: ${reviews}`
+  );
+
+  return;
+}
     // прийом поста для розсилки
   const adminState = broadcastState.get(chatId);
 
