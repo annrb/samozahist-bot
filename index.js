@@ -410,8 +410,8 @@ if (text === "1️⃣ Повна оплата") {
     "✅ Замовлення прийнято!\n\n💳 Оплатіть повну суму за реквізитами нижче 👇"
   );
 
-  await sendMessage(chatId, "ТУТ_НОМЕР_КАРТИ");
-  await sendMessage(chatId, "Отримувач: ТВОЄ_ІМʼЯ");
+  await sendMessage(chatId, "4441 1144 4890 6972");
+  await sendMessage(chatId, "Ковальчук О.");
 
   await sendMessage(
     chatId,
