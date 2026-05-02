@@ -447,13 +447,12 @@ if (
   }
 
   if (text === "📋 Скопіювати реквізити") {
-  await sendMessage(
-    chatId,
-    `💳 Реквізити для оплати:
+  await sendMessage(chatId, "💳 Реквізити для оплати:");
 
-Номер карти: ТУТ_НОМЕР_КАРТИ
-Отримувач: ТВОЄ_ІМʼЯ`
-  );
+  await sendMessage(chatId, "4441 1144 4890 6972");
+
+  await sendMessage(chatId, "Отримувач: Ковальчук О.");
+
   return;
 }
 
