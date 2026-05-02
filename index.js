@@ -202,6 +202,64 @@ const chatId = msg.chat.id;
 const text = msg.text || "";
 const source = sourceFromText(text);
 const user = getUserData(msg, source);
+    // адмін-панель
+  if (text === "/admin" && isAdmin(chatId)) {
+    await sendMessage(
+      chatId,
+      "⚙️ Адмін-панель",
+      { reply_markup: adminKeyboard() }
+    );
+    return;
+  }
+
+  if (text === "🏠 Назад" && isAdmin(chatId)) {
+    await sendMessage(
+      chatId,
+      "Головне меню 👇",
+      { reply_markup: mainKeyboard() }
+    );
+    return;
+  }
+
+  if (text === "📣 Розсилка" && isAdmin(chatId)) {
+    broadcastState.set(chatId, { step: "choose_audience" });
+
+    await sendMessage(
+      chatId,
+      "👥 Обери аудиторію для розсилки:",
+      { reply_markup: broadcastAudienceKeyboard() }
+    );
+    return;
+  }
+
+  if (
+    ["👥 Всім", "🛒 Покупцям", "⭐ Повторним клієнтам", "👀 Цікавились"].includes(text) &&
+    isAdmin(chatId)
+  ) {
+    const state = broadcastState.get(chatId);
+    if (state && state.step === "choose_audience") {
+      state.step = "wait_post";
+      state.audience = text;
+      broadcastState.set(chatId, state);
+
+      await sendMessage(
+        chatId,
+        "📝 Надішліть пост для розсилки (текст / фото / відео)"
+      );
+      return;
+    }
+  }
+
+  if (text === "❌ Скасувати" && isAdmin(chatId)) {
+    broadcastState.delete(chatId);
+
+    await sendMessage(
+      chatId,
+      "❌ Дію скасовано",
+      { reply_markup: adminKeyboard() }
+    );
+    return;
+  }
 
   // створення / оновлення ліда у фоні
   if (
