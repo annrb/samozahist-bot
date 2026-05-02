@@ -116,26 +116,52 @@ if (body.callback_query) {
   const telegramId = data.split("_")[1];
 
   if (action === "paid") {
-    updateCRM({
-      telegramId,
-      paymentStatus: "✅ Оплату підтверджено",
-      comment: "Оплату підтверджено менеджером"
-    });
+  updateCRM({
+    telegramId,
+    paymentStatus: "✅ Оплату підтверджено",
+    comment: "Оплату підтверджено менеджером"
+  });
 
-    await sendMessage(adminChatId, "✅ Оплату підтверджено");
-    return;
-  }
+  // повідомлення клієнту
+  await sendMessage(
+    telegramId,
+    `✅ Оплату отримано
 
-  if (action === "problem") {
-    updateCRM({
-      telegramId,
-      paymentStatus: "❌ Проблема з оплатою",
-      comment: "Проблема з оплатою"
-    });
+📦 Ваше замовлення підтверджено та передано на відправку.
+Дякуємо за покупку ❤️`
+  );
 
-    await sendMessage(adminChatId, "❌ Позначено проблему з оплатою");
-    return;
-  }
+  // повідомлення менеджеру
+  await sendMessage(adminChatId, "✅ Оплату підтверджено");
+
+  return;
+}
+
+if (action === "problem") {
+  updateCRM({
+    telegramId,
+    paymentStatus: "❌ Проблема з оплатою",
+    comment: "Проблема з оплатою"
+  });
+
+  // повідомлення клієнту
+  await sendMessage(
+    telegramId,
+    `❗ Ми не змогли підтвердити оплату
+
+Будь ласка, перевірте:
+• чи правильно вказана сума
+• чи успішно пройшов платіж
+• чи надісланий скріншот оплати
+
+Якщо все вірно — надішліть скрін ще раз 📸`
+  );
+
+  // повідомлення менеджеру
+  await sendMessage(adminChatId, "❌ Позначено проблему з оплатою");
+
+  return;
+}
 
   return;
 }
