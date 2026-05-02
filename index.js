@@ -388,15 +388,9 @@ if (
 
   selectedPayment.set(chatId, payment);
 
-  await Promise.all([
-    sendMessage(
-      chatId,
-      "✅ Замовлення прийнято! Менеджер зв'яжеться з вами.",
-      { reply_markup: mainKeyboard() }
-    ),
-    sendMessage(
-      ADMIN_ID,
-      `🆕 НОВЕ ЗАМОВЛЕННЯ
+  await sendMessage(
+  ADMIN_ID,
+  `🆕 НОВЕ ЗАМОВЛЕННЯ
 
 👤 ${order.name}
 📞 ${order.phone}
@@ -404,17 +398,55 @@ if (
 📦 ${order.delivery}
 🛡 ${order.product}
 💰 ${payment}`
-    )
-  ]);
+);
 
-  updateCRM({
-    ...user,
-    ...order,
-    payment,
-    status: "🟢 Замовлення",
-    comment: "Оформив замовлення"
-  });
+// якщо повна оплата
+if (text === "1️⃣ Повна оплата") {
+  selectedPayment.set(chatId, payment);
+  waitingPaymentProof.add(chatId);
 
+  await sendMessage(
+    chatId,
+    "✅ Замовлення прийнято!\n\n💳 Оплатіть повну суму за реквізитами нижче 👇"
+  );
+
+  await sendMessage(chatId, "ТУТ_НОМЕР_КАРТИ");
+  await sendMessage(chatId, "Отримувач: ТВОЄ_ІМʼЯ");
+
+  await sendMessage(
+    chatId,
+    "📸 Після оплати надішліть скріншот платежу",
+    { reply_markup: mainKeyboard() }
+  );
+}
+
+// якщо накладний
+if (text === "2️⃣ Накладний платіж (передоплата 100 грн)") {
+  selectedPayment.set(chatId, payment);
+  waitingPaymentProof.add(chatId);
+
+  await sendMessage(
+    chatId,
+    "✅ Замовлення прийнято!\n\n💳 Для підтвердження замовлення внесіть передоплату 100 грн 👇"
+  );
+
+  await sendMessage(chatId, "ТУТ_НОМЕР_КАРТИ");
+  await sendMessage(chatId, "Отримувач: ТВОЄ_ІМʼЯ");
+
+  await sendMessage(
+    chatId,
+    "📸 Після оплати надішліть скріншот платежу",
+    { reply_markup: mainKeyboard() }
+  );
+}
+
+updateCRM({
+  ...user,
+  ...order,
+  payment,
+  status: "🟢 Замовлення",
+  comment: "Оформив замовлення"
+});
   pendingOrders.delete(chatId);
   return;
 }
