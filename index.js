@@ -260,6 +260,27 @@ const user = getUserData(msg, source);
     );
     return;
   }
+    if (text === "📊 Статистика" && isAdmin(chatId)) {
+    const response = await fetch(SHEET_URL);
+    const html = await response.text();
+
+    await sendMessage(
+      chatId,
+      `📊 Статистика
+
+👥 Ліди: дивись у таблиці CRM
+🛒 Замовлення: дивись у CRM
+⭐ Повторні: дивись у CRM
+💰 Оплачені: дивись у CRM
+🚚 В дорозі: дивись у CRM
+✅ Отримано: дивись у CRM
+📸 Відгуки: дивись у CRM
+
+(детальну автоматичну аналітику додамо наступним блоком)`
+    );
+
+    return;
+  }
 
   // створення / оновлення ліда у фоні
   if (
