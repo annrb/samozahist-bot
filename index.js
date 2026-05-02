@@ -347,21 +347,46 @@ await sendMessage(
     return;
   }
 
-  if (
+  
+if (
   text === "1️⃣ Повна оплата" ||
   text === "2️⃣ Накладний платіж (передоплата 100 грн)"
 ) {
   const order = pendingOrders.get(chatId);
 
+  // якщо це просто перегляд оплати / доставки
   if (!order) {
-    await sendMessage(chatId, "❌ Спочатку заповніть дані для замовлення.");
+    if (text === "1️⃣ Повна оплата") {
+      await sendMessage(
+        chatId,
+        `💳 Реквізити для оплати:
+
+IBAN: ТУТ_ТВІЙ_IBAN
+Отримувач: ТВОЄ_ІМʼЯ
+
+Після оплати натисніть:
+📸 Надіслати скрін оплати`
+      );
+    } else {
+      await sendMessage(
+        chatId,
+        `📦 Умови накладного платежу:
+
+✅ Передоплата 100 грн
+📦 Решта — на пошті при отриманні`
+      );
+    }
+
     return;
   }
 
+  // якщо це оформлення замовлення
   const payment =
     text === "1️⃣ Повна оплата"
       ? "Повна оплата"
       : "Передоплата 100 грн / решта на пошті";
+
+  selectedPayment.set(chatId, payment);
 
   await Promise.all([
     sendMessage(
@@ -384,10 +409,7 @@ await sendMessage(
 
   updateCRM({
     ...user,
-    phone: order.phone,
-    city: order.city,
-    delivery: order.delivery,
-    product: order.product,
+    ...order,
     payment,
     status: "🟢 Замовлення",
     comment: "Оформив замовлення"
@@ -396,44 +418,6 @@ await sendMessage(
   pendingOrders.delete(chatId);
   return;
 }
-    
-  if (text === "📸 Надіслати скрін оплати") {
-    waitingPaymentProof.add(chatId);
-    await sendMessage(chatId, "Надішліть скрін оплати 📸");
-    return;
-  }
-
-  if (text === "⬅️ Назад") {
-    await sendMessage(chatId, "Головне меню 👇", {
-      reply_markup: mainKeyboard()
-    });
-    return;
-  }
-
-  if (text === "💬 Консультант") {
-    await sendMessage(chatId, "Напишіть менеджеру: @annrb");
-    return;
-  }
-
-  if (text === "📣 Акції / новинки") {
-    await sendMessage(
-      chatId,
-      `🔥 АКЦІЇ / НОВИНКИ
-
-🆕 Свіжа поставка КОБРА-1 МВС — в наявності!
-💰 Ціна: 300 грн
-
-✅ КОБРА-1Н 50 мл — 200 грн`
-    );
-
-    updateCRM({
-      ...user,
-      status: "🟡 Цікавився",
-      comment: "Цікавився акціями"
-    });
-    return;
-  }
-
   if (text === "🖼 Наші фото / відгуки") {
     await sendMessage(chatId, "https://t.me/vidgyku_balonkastet");
 
