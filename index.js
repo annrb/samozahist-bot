@@ -92,8 +92,6 @@ function mainKeyboard() {
 function paymentKeyboard() {
   return {
     keyboard: [
-      [{ text: "1️⃣ Повна оплата" }],
-      [{ text: "2️⃣ Накладний платіж (передоплата 100 грн)" }],
       [{ text: "📋 Скопіювати реквізити" }],
       [{ text: "📸 Надіслати скрін оплати" }],
       [{ text: "⬅️ Назад" }]
