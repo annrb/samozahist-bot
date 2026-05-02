@@ -451,11 +451,30 @@ if (
     chatId,
     `💳 Реквізити для оплати:
 
-Номер карти: 4441 1144 4890 6972
-Отримувач: Ковальчук О.
+Номер карти: ТУТ_НОМЕР_КАРТИ
+Отримувач: ТВОЄ_ІМʼЯ`
   );
   return;
 }
+
+if (text === "📸 Надіслати скрін оплати") {
+  waitingPaymentProof.add(chatId);
+
+  await sendMessage(
+    chatId,
+    "📸 Надішліть скріншот оплати одним повідомленням"
+  );
+  return;
+}
+
+if (text === "⬅️ Назад") {
+  await sendMessage(chatId, "Головне меню 👇", {
+    reply_markup: mainKeyboard()
+  });
+  return;
+}
+
+// Замовлення / вільне повідомлення
     // Замовлення / вільне повідомлення
   if (isOrderMessage && !msg.photo && !msg.video && !msg.document) {
   const parts = text.split(",").map(x => x.trim());
