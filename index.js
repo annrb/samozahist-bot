@@ -430,8 +430,8 @@ if (text === "2️⃣ Накладний платіж (передоплата 10
     "✅ Замовлення прийнято!\n\n💳 Для підтвердження замовлення внесіть передоплату 100 грн 👇"
   );
 
-  await sendMessage(chatId, "ТУТ_НОМЕР_КАРТИ");
-  await sendMessage(chatId, "Отримувач: ТВОЄ_ІМʼЯ");
+  await sendMessage(chatId, "4441 1144 4890 6972");
+  await sendMessage(chatId, "Отримувач: Ковальчук О.");
 
   await sendMessage(
     chatId,
