@@ -109,7 +109,34 @@ app.post("/", async (req, res) => {
 
 // inline-кнопки
 if (body.callback_query) {
-  console.log("CALLBACK:", body.callback_query.data);
+  const data = body.callback_query.data;
+  const adminChatId = body.callback_query.message.chat.id;
+
+  const action = data.split("_")[0];
+  const telegramId = data.split("_")[1];
+
+  if (action === "paid") {
+    updateCRM({
+      telegramId,
+      paymentStatus: "✅ Оплату підтверджено",
+      comment: "Оплату підтверджено менеджером"
+    });
+
+    await sendMessage(adminChatId, "✅ Оплату підтверджено");
+    return;
+  }
+
+  if (action === "problem") {
+    updateCRM({
+      telegramId,
+      paymentStatus: "❌ Проблема з оплатою",
+      comment: "Проблема з оплатою"
+    });
+
+    await sendMessage(adminChatId, "❌ Позначено проблему з оплатою");
+    return;
+  }
+
   return;
 }
 
