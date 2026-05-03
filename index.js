@@ -60,12 +60,17 @@ function sourceFromText(text) {
 function updateCRM(data) {
   console.log("CRM DATA:", JSON.stringify(data));
 
+  const controller = new AbortController();
+
+  setTimeout(() => controller.abort(), 3000);
+
   fetch(SHEET_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
+    signal: controller.signal
   }).catch(console.error);
 }
 
