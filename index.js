@@ -526,6 +526,18 @@ targets = [...new Set(targets)];
 
   // +
   if (text === "+") {
+    const lastRequest = consultantCooldown.get(chatId);
+const now = Date.now();
+
+if (lastRequest && now - lastRequest < 300000) {
+  await sendMessage(
+    chatId,
+    "⏳ Запит уже відправлено менеджеру. Будь ласка, зачекайте 5 хвилин 👌"
+  );
+  return;
+}
+
+consultantCooldown.set(chatId, now);
     await sendMessage(
       chatId,
       "💬 Напишіть коротко, для чого потрібен засіб самозахисту, і менеджер підкаже найкращий варіант."
