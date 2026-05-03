@@ -16,6 +16,8 @@ const waitingPaymentProof = new Set();
 const selectedPayment = new Map();
 const pendingOrders = new Map();
 
+const consultantCooldown = new Map();
+
 const broadcastState = new Map();
 const adminMenuUsers = new Set();
 
