@@ -629,6 +629,43 @@ await sendMessage(
     
     return;
   }
+  if (text === "💬 Консультант") {
+  const lastRequest = consultantCooldown.get(chatId);
+  const now = Date.now();
+
+  if (lastRequest && now - lastRequest < 300000) {
+    await sendMessage(
+      chatId,
+      "⏳ Ви вже звернулись до консультанта. Будь ласка, зачекайте 5 хвилин 👌"
+    );
+    return;
+  }
+
+  consultantCooldown.set(chatId, now);
+
+  await Promise.all([
+    sendMessage(
+      chatId,
+      "✅ Менеджер отримав ваше повідомлення і скоро відповість 👍"
+    ),
+    sendMessage(
+      ADMIN_ID,
+      `🔥 Запит на консультацію
+
+👤 ${user.name}
+🔗 ${user.username}
+🆔 ${chatId}`
+    )
+  ]);
+
+  updateCRM({
+    ...user,
+    status: "🟡 Цікавився",
+    comment: "Натиснув консультант"
+  });
+
+  return;
+}
 
   const isOrderMessage =
     text.includes(",") &&
