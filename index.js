@@ -151,6 +151,17 @@ if (body.callback_query) {
   const action = data.split("_")[0];
   const telegramId = data.split("_")[1];
 
+  if (action === "reply") {
+  replyState.set(adminChatId, telegramId);
+
+  await sendMessage(
+    adminChatId,
+    `✍️ Напишіть повідомлення для клієнта (${telegramId})`
+  );
+
+  return;
+}
+
   if (action === "paid") {
   updateCRM({
     telegramId,
