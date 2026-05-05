@@ -326,6 +326,20 @@ const user = getUserData(msg, source);
 
   return;
 }
+  if (isAdmin(chatId) && replyState.has(chatId)) {
+  const clientId = replyState.get(chatId);
+
+  await sendMessage(
+    clientId,
+    `💬 Повідомлення від менеджера:
+
+${text}`
+  );
+
+  await sendMessage(chatId, "✅ Повідомлення відправлено");
+  replyState.delete(chatId);
+  return;
+}
     // прийом поста для розсилки
   const adminState = broadcastState.get(chatId);
 
