@@ -655,13 +655,25 @@ await sendMessage(
       "✅ Менеджер отримав ваше повідомлення і скоро відповість 👍"
     ),
     sendMessage(
-      ADMIN_ID,
-      `🔥 Запит на консультацію
+  ADMIN_ID,
+  `🔥 Запит на консультацію
 
 👤 ${user.name}
 🔗 ${user.username}
-🆔 ${chatId}`
-    )
+🆔 ${chatId}`,
+  {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "✍️ Відповісти",
+            callback_data: `reply_${chatId}`
+          }
+        ]
+      ]
+    }
+  }
+)
   ]);
 
   updateCRM({
