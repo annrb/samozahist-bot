@@ -387,7 +387,30 @@ x${item.qty}
 
 if (data === "more") {
 	
-	if (data === "removeitem") {
+
+  selectedQuantity.set(adminChatId, 1);
+
+  await sendMessage(
+    adminChatId,
+    "🛒 Оберіть ще товар:",
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "КОБРА-1 МВС — 300", callback_data: "product_cobra_mvs" }],
+          [{ text: "КОБРА-1Н 100 мл — 250", callback_data: "product_cobra100" }],
+          [{ text: "ТЕРЕН-4 — 250", callback_data: "product_teren4" }],
+          [{ text: "ТЕРЕН-4М — 290", callback_data: "product_teren4m" }],
+          [{ text: "ТРИЗУБ-4 — 250", callback_data: "product_trizub4" }],
+          [{ text: "КОБРА-1Н 50 мл — 200", callback_data: "product_cobra50" }]
+        ]
+      }
+    }
+  );
+
+  return;
+}
+
+if (data === "removeitem") {
 
   let userCart =
     cart.get(adminChatId) || [];
@@ -419,28 +442,6 @@ if (data === "clearcart") {
   await sendMessage(
     adminChatId,
     "🗑 Кошик очищено"
-  );
-
-  return;
-}
-
-  selectedQuantity.set(adminChatId, 1);
-
-  await sendMessage(
-    adminChatId,
-    "🛒 Оберіть ще товар:",
-    {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "КОБРА-1 МВС — 300", callback_data: "product_cobra_mvs" }],
-          [{ text: "КОБРА-1Н 100 мл — 250", callback_data: "product_cobra100" }],
-          [{ text: "ТЕРЕН-4 — 250", callback_data: "product_teren4" }],
-          [{ text: "ТЕРЕН-4М — 290", callback_data: "product_teren4m" }],
-          [{ text: "ТРИЗУБ-4 — 250", callback_data: "product_trizub4" }],
-          [{ text: "КОБРА-1Н 50 мл — 200", callback_data: "product_cobra50" }]
-        ]
-      }
-    }
   );
 
   return;
