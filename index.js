@@ -352,21 +352,33 @@ x${item.qty}
     textCart,
     {
       reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text:"➕ Додати ще",
-              callback_data:"more"
-            }
-          ],
-          [
-            {
-              text:"✅ Оформити",
-              callback_data:"checkout"
-            }
-          ]
-        ]
+  inline_keyboard: [
+    [
+      {
+        text:"➕ Додати ще",
+        callback_data:"more"
       }
+    ],
+    [
+      {
+        text:"✏️ Видалити останній",
+        callback_data:"removeitem"
+      }
+    ],
+    [
+      {
+        text:"🗑 Очистити кошик",
+        callback_data:"clearcart"
+      }
+    ],
+    [
+      {
+        text:"✅ Оформити",
+        callback_data:"checkout"
+      }
+    ]
+  ]
+}
     }
   );
 
@@ -374,6 +386,43 @@ x${item.qty}
 }
 
 if (data === "more") {
+	
+	if (data === "removeitem") {
+
+  let userCart =
+    cart.get(adminChatId) || [];
+
+  if (!userCart.length) {
+    await sendMessage(
+      adminChatId,
+      "❌ Кошик порожній"
+    );
+    return;
+  }
+
+  userCart.pop();
+
+  cart.set(adminChatId, userCart);
+
+  await sendMessage(
+    adminChatId,
+    "✏️ Останній товар видалено"
+  );
+
+  return;
+}
+
+if (data === "clearcart") {
+
+  cart.delete(adminChatId);
+
+  await sendMessage(
+    adminChatId,
+    "🗑 Кошик очищено"
+  );
+
+  return;
+}
 
   selectedQuantity.set(adminChatId, 1);
 
