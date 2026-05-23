@@ -63,7 +63,7 @@ function updateCRM(data) {
 
   const controller = new AbortController();
 
-  setTimeout(() => controller.abort(), 3000);
+  setTimeout(() => controller.abort(), 10000);
 
   fetch(SHEET_URL, {
     method: "POST",
@@ -76,15 +76,41 @@ function updateCRM(data) {
 }
 
 async function sendMessage(chatId, text, extra = {}) {
-  return fetch(`${TELEGRAM_API}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text,
-      ...extra
-    })
-  });
+  try {
+    const controller = new AbortController();
+
+    const timeout = setTimeout(() => {
+      controller.abort();
+    }, 10000);
+
+    const response = await fetch(
+      `${TELEGRAM_API}/sendMessage`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text,
+          ...extra
+        }),
+        signal: controller.signal
+      }
+    );
+
+    clearTimeout(timeout);
+
+    return response;
+
+  } catch (err) {
+    console.log(
+      "sendMessage ERROR:",
+      err.message
+    );
+
+    return null;
+  }
 }
 
 async function forwardMessage(chatId, fromChatId, messageId) {
