@@ -16,6 +16,11 @@ const waitingPaymentProof = new Set();
 const selectedPayment = new Map();
 const pendingOrders = new Map();
 
+const cart = new Map();
+const selectedProduct = new Map();
+const selectedQuantity = new Map();
+const waitingCustomerData = new Set();
+
 const consultantCooldown = new Map();
 
 const broadcastState = new Map();
@@ -164,6 +169,33 @@ function paymentKeyboard() {
   };
 }
 
+const products = {
+  cobra_mvs: {
+    name: "КОБРА-1 МВС",
+    price: 300
+  },
+  cobra100: {
+    name: "КОБРА-1Н 100 мл",
+    price: 250
+  },
+  teren4: {
+    name: "ТЕРЕН-4",
+    price: 250
+  },
+  teren4m: {
+    name: "ТЕРЕН-4М",
+    price: 290
+  },
+  trizub4: {
+    name: "ТРИЗУБ-4",
+    price: 250
+  },
+  cobra50: {
+    name: "КОБРА-1Н 50 мл",
+    price: 200
+  }
+};
+
 app.post("/", async (req, res) => {
   res.sendStatus(200); // відповідаємо Telegram одразу
 
@@ -176,6 +208,219 @@ if (body.callback_query) {
 
   const action = data.split("_")[0];
   const telegramId = data.split("_")[1];
+  
+  if (action === "product") {
+
+  const productKey = data.replace("product_", "");
+  const product = products[productKey];
+
+  selectedProduct.set(adminChatId, productKey);
+  selectedQuantity.set(adminChatId, 1);
+
+  await sendMessage(
+    adminChatId,
+    `🛒 ${product.name}
+
+💰 Ціна: ${product.price} грн
+📦 Кількість: 1`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "➖", callback_data: "minus" },
+            { text: "1", callback_data: "count" },
+            { text: "➕", callback_data: "plus" }
+          ],
+          [
+            {
+              text: "🛒 Додати в кошик",
+              callback_data: "addcart"
+            }
+          ]
+        ]
+      }
+    }
+  );
+
+  return;
+}
+
+if (data === "plus" || data === "minus") {
+
+  let qty = selectedQuantity.get(adminChatId) || 1;
+
+  if (data === "plus") {
+    qty++;
+  }
+
+  if (data === "minus" && qty > 1) {
+    qty--;
+  }
+
+  selectedQuantity.set(adminChatId, qty);
+
+  const productKey =
+    selectedProduct.get(adminChatId);
+
+  const product =
+    products[productKey];
+
+  await sendMessage(
+    adminChatId,
+    `🛒 ${product.name}
+
+💰 Ціна: ${product.price} грн
+📦 Кількість: ${qty}
+
+💵 Разом: ${qty * product.price} грн`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "➖",
+              callback_data: "minus"
+            },
+            {
+              text: String(qty),
+              callback_data: "count"
+            },
+            {
+              text: "➕",
+              callback_data: "plus"
+            }
+          ],
+          [
+            {
+              text: "🛒 Додати в кошик",
+              callback_data: "addcart"
+            }
+          ]
+        ]
+      }
+    }
+  );
+
+  return;
+}
+
+if (data === "addcart") {
+
+  const productKey =
+    selectedProduct.get(adminChatId);
+
+  const qty =
+    selectedQuantity.get(adminChatId) || 1;
+
+  const product =
+    products[productKey];
+
+  let userCart =
+    cart.get(adminChatId) || [];
+
+  userCart.push({
+    product: product.name,
+    qty: qty,
+    price: product.price
+  });
+
+  cart.set(adminChatId, userCart);
+
+  let total = 0;
+
+  let textCart =
+    "🛒 Ваш кошик:\n\n";
+
+  userCart.forEach(item => {
+
+    total +=
+      item.qty * item.price;
+
+    textCart +=
+`${item.product}
+x${item.qty}
+= ${item.qty * item.price} грн
+
+`;
+  });
+
+  textCart +=
+`💵 Разом: ${total} грн`;
+
+  await sendMessage(
+    adminChatId,
+    textCart,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text:"➕ Додати ще",
+              callback_data:"more"
+            }
+          ],
+          [
+            {
+              text:"✅ Оформити",
+              callback_data:"checkout"
+            }
+          ]
+        ]
+      }
+    }
+  );
+
+  return;
+}
+
+if (data === "more") {
+
+  selectedQuantity.set(adminChatId, 1);
+
+  await sendMessage(
+    adminChatId,
+    "🛒 Оберіть ще товар:",
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "КОБРА-1 МВС — 300", callback_data: "product_cobra_mvs" }],
+          [{ text: "КОБРА-1Н 100 мл — 250", callback_data: "product_cobra100" }],
+          [{ text: "ТЕРЕН-4 — 250", callback_data: "product_teren4" }],
+          [{ text: "ТЕРЕН-4М — 290", callback_data: "product_teren4m" }],
+          [{ text: "ТРИЗУБ-4 — 250", callback_data: "product_trizub4" }],
+          [{ text: "КОБРА-1Н 50 мл — 200", callback_data: "product_cobra50" }]
+        ]
+      }
+    }
+  );
+
+  return;
+}
+
+if (data === "checkout") {
+	
+	if (!cart.get(adminChatId)?.length) {
+  await sendMessage(
+    adminChatId,
+    "❌ Кошик порожній"
+  );
+  return;
+}
+
+  waitingCustomerData.add(adminChatId);
+
+  await sendMessage(
+    adminChatId,
+`📝 Надішліть одним повідомленням:
+
+ПІБ, телефон, місто, пункт доставки
+
+Приклад:
+Іван Петренко, 0971234567, Львів, Поштомат 12`
+  );
+
+  return;
+}
 
   if (action === "reply") {
   replyState.set(adminChatId, telegramId);
@@ -736,9 +981,6 @@ await sendMessage(
   return;
 }
 
-  const isOrderMessage =
-    text.includes(",") &&
-    text.split(",").length >= 5;
 
   const isMenuButton = [
     "🛒 Асортимент",
@@ -768,7 +1010,7 @@ await sendMessage(
 4) ТЕРЕН-4М — 290 грн
 5) ТРИЗУБ-4 — 250 грн
 6) КОБРА-1Н 50 мл — 200 грн`
-    );
+);
 
     updateCRM({
       ...user,
@@ -779,17 +1021,28 @@ await sendMessage(
   }
 
   if (text === "📝 Оформити замовлення") {
-    await sendMessage(
-      chatId,
-      `📝 Надішліть ОДНИМ повідомленням:
 
-ПІБ, телефон, місто, пункт доставки, товар
+  selectedQuantity.set(chatId, 1);
 
-Приклад:
-Іван Петренко, 0971234567, Львів, Поштомат 12, Кобра МВС x2 + Терен-4 x1`
-    );
-    return;
-  }
+  await sendMessage(
+    chatId,
+    "🛒 Оберіть товар:",
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "КОБРА-1 МВС — 300", callback_data: "product_cobra_mvs" }],
+          [{ text: "КОБРА-1Н 100 мл — 250", callback_data: "product_cobra100" }],
+          [{ text: "ТЕРЕН-4 — 250", callback_data: "product_teren4" }],
+          [{ text: "ТЕРЕН-4М — 290", callback_data: "product_teren4m" }],
+          [{ text: "ТРИЗУБ-4 — 250", callback_data: "product_trizub4" }],
+          [{ text: "КОБРА-1Н 50 мл — 200", callback_data: "product_cobra50" }]
+        ]
+      }
+    }
+  );
+
+  return;
+}
 
   if (text === "💳 Оплата / доставка") {
     await sendMessage(
@@ -880,7 +1133,7 @@ if (text === "1️⃣ Повна оплата") {
   );
 
   await sendMessage(chatId, "4441 1144 4890 6972");
-  await sendMessage(chatId, "Ковальчук О.");
+  await sendMessage(chatId, "Отримувач: Ковальчук О.");
 
   await sendMessage(
     chatId,
@@ -917,6 +1170,8 @@ updateCRM({
   comment: "Оформив замовлення"
 });
   pendingOrders.delete(chatId);
+  cart.delete(chatId);
+waitingCustomerData.delete(chatId);
   return;
 }
   if (text === "🖼 Наші фото / відгуки") {
@@ -984,16 +1239,23 @@ if (text === "⬅️ Назад") {
 
 // Замовлення / вільне повідомлення
     // Замовлення / вільне повідомлення
-  if (isOrderMessage && !msg.photo && !msg.video && !msg.document) {
+  if (
+waitingCustomerData.has(chatId) &&
+!msg.photo &&
+!msg.video &&
+!msg.document
+) {
   const parts = text.split(",").map(x => x.trim());
 
-  if (parts.length >= 5) {
+  if (parts.length >= 4) {
     const order = {
       name: parts[0],
       phone: parts[1],
       city: parts[2],
       delivery: parts[3],
-      product: parts.slice(4).join(", ")
+      product: cart.get(chatId)
+        ?.map(x => `${x.product} x${x.qty}`)
+        .join(" | ")
     };
 
     const cleanPhone = order.phone.replace(/\D/g, "");
@@ -1014,6 +1276,7 @@ if (text === "⬅️ Назад") {
       ...order,
       phone: cleanPhone
     });
+	
 
     await sendMessage(chatId, "💳 Оберіть спосіб оплати:", {
       reply_markup: {
