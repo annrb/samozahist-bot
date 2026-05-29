@@ -471,21 +471,6 @@ if (data === "checkout") {
   return;
 }
 
-  waitingCustomerData.add(adminChatId);
-
-  await sendMessage(
-    adminChatId,
-`📝 Надішліть одним повідомленням:
-
-ПІБ, телефон, місто, пункт доставки
-
-Приклад:
-Іван Петренко, 0971234567, Львів, Поштомат 12`
-  );
-
-  return;
-}
-
   if (action === "reply") {
   replyState.set(adminChatId, telegramId);
 
