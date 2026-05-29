@@ -539,10 +539,17 @@ if (data === "checkout") {
   orderDraft.set(adminChatId, {});
 
   await sendMessage(
-    adminChatId,
-    "👤 Введіть ваше ім'я:"
-  );
-
+  adminChatId,
+  "👤 Введіть ваше ім'я:",
+  {
+    reply_markup: {
+      keyboard: [
+        [{ text: "❌ Скасувати" }]
+      ],
+      resize_keyboard: true
+    }
+  }
+);
   return;
 }
 
