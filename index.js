@@ -21,6 +21,9 @@ const selectedProduct = new Map();
 const selectedQuantity = new Map();
 const waitingCustomerData = new Set();
 
+const orderStep = new Map();
+const orderDraft = new Map();
+
 const consultantCooldown = new Map();
 
 const broadcastState = new Map();
