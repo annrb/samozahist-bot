@@ -428,11 +428,74 @@ if (data === "removeitem") {
 
   userCart.pop();
 
+  if (!userCart.length) {
+
+    cart.delete(adminChatId);
+
+    await sendMessage(
+      adminChatId,
+      "🗑 Кошик порожній"
+    );
+
+    return;
+  }
+
   cart.set(adminChatId, userCart);
+
+  let total = 0;
+
+  let textCart =
+    "🛒 Ваш кошик:\\n\\n";
+
+  userCart.forEach(item => {
+
+    total +=
+      item.qty * item.price;
+
+    textCart +=
+`${item.product}
+x${item.qty}
+= ${item.qty * item.price} грн
+
+`;
+  });
+
+  textCart +=
+`💵 Разом: ${total} грн`;
 
   await sendMessage(
     adminChatId,
-    "✏️ Останній товар видалено"
+    textCart,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text:"➕ Додати ще",
+              callback_data:"more"
+            }
+          ],
+          [
+            {
+              text:"✏️ Видалити останній",
+              callback_data:"removeitem"
+            }
+          ],
+          [
+            {
+              text:"🗑 Очистити кошик",
+              callback_data:"clearcart"
+            }
+          ],
+          [
+            {
+              text:"✅ Оформити",
+              callback_data:"checkout"
+            }
+          ]
+        ]
+      }
+    }
   );
 
   return;
