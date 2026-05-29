@@ -1367,6 +1367,22 @@ if (text === "⬅️ Назад") {
 
 if (step) {
 
+	  if (text === "❌ Скасувати") {
+
+    orderStep.delete(chatId);
+    orderDraft.delete(chatId);
+
+    await sendMessage(
+      chatId,
+      "❌ Оформлення скасовано",
+      {
+        reply_markup: mainKeyboard()
+      }
+    );
+
+    return;
+  }
+	
   const draft =
     orderDraft.get(chatId) || {};
 
