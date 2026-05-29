@@ -451,12 +451,23 @@ if (data === "clearcart") {
 }
 
 if (data === "checkout") {
-	
-	if (!cart.get(adminChatId)?.length) {
+
+  if (!cart.get(adminChatId)?.length) {
+    await sendMessage(
+      adminChatId,
+      "❌ Кошик порожній"
+    );
+    return;
+  }
+
+  orderStep.set(adminChatId, "firstName");
+  orderDraft.set(adminChatId, {});
+
   await sendMessage(
     adminChatId,
-    "❌ Кошик порожній"
+    "👤 Введіть ваше ім'я:"
   );
+
   return;
 }
 
