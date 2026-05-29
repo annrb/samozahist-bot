@@ -1288,54 +1288,130 @@ if (text === "⬅️ Назад") {
 
 // Замовлення / вільне повідомлення
     // Замовлення / вільне повідомлення
-  if (
-waitingCustomerData.has(chatId) &&
-!msg.photo &&
-!msg.video &&
-!msg.document
-) {
-  const parts = text.split(",").map(x => x.trim());
+  const step = orderStep.get(chatId);
 
-  if (parts.length >= 4) {
+if (step) {
+
+  const draft =
+    orderDraft.get(chatId) || {};
+
+  if (step === "firstName") {
+
+    draft.firstName = text;
+
+    orderDraft.set(chatId, draft);
+    orderStep.set(chatId, "lastName");
+
+    await sendMessage(
+      chatId,
+      "👤 Введіть ваше прізвище:"
+    );
+
+    return;
+  }
+
+  if (step === "lastName") {
+
+    draft.lastName = text;
+
+    orderDraft.set(chatId, draft);
+    orderStep.set(chatId, "phone");
+
+    await sendMessage(
+      chatId,
+      "📞 Введіть номер телефону:"
+    );
+
+    return;
+  }
+
+  if (step === "phone") {
+
+    const cleanPhone =
+      text.replace(/\D/g, "");
+
+    const validPhone =
+      /^0\d{9}$/.test(cleanPhone) ||
+      /^380\d{9}$/.test(cleanPhone);
+
+    if (!validPhone) {
+
+      await sendMessage(
+        chatId,
+        "❌ Невірний номер телефону.\n\nПриклад: 0971234567"
+      );
+
+      return;
+    }
+
+    draft.phone = cleanPhone;
+
+    orderDraft.set(chatId, draft);
+    orderStep.set(chatId, "city");
+
+    await sendMessage(
+      chatId,
+      "🏙 Введіть місто:"
+    );
+
+    return;
+  }
+
+  if (step === "city") {
+
+    draft.city = text;
+
+    orderDraft.set(chatId, draft);
+    orderStep.set(chatId, "delivery");
+
+    await sendMessage(
+      chatId,
+      "📦 Введіть номер відділення або поштомату:"
+    );
+
+    return;
+  }
+
+  if (step === "delivery") {
+
+    draft.delivery = text;
+
     const order = {
-      name: parts[0],
-      phone: parts[1],
-      city: parts[2],
-      delivery: parts[3],
+      name:
+        `${draft.firstName} ${draft.lastName}`,
+      phone: draft.phone,
+      city: draft.city,
+      delivery: draft.delivery,
       product: cart.get(chatId)
         ?.map(x => `${x.product} x${x.qty}`)
         .join(" | ")
     };
 
-    const cleanPhone = order.phone.replace(/\D/g, "");
-    const validPhone =
-      /^0\d{9}$/.test(cleanPhone) ||
-      /^380\d{9}$/.test(cleanPhone);
-    
+    pendingOrders.set(chatId, order);
 
-    if (!validPhone) {
-      await sendMessage(
-        chatId,
-        "❌ Невірний номер телефону.\n\nПриклад: 0971234567 або +380971234567"
-      );
-      return;
-    }
+    orderStep.delete(chatId);
+    orderDraft.delete(chatId);
 
-    pendingOrders.set(chatId, {
-      ...order,
-      phone: cleanPhone
-    });
-	
+    await sendMessage(
+      chatId,
+      `✅ Дані отримано
 
-    await sendMessage(chatId, "💳 Оберіть спосіб оплати:", {
-      reply_markup: {
-        keyboard: [
-          [{ text: "1️⃣ Повна оплата" }],
-          [{ text: "2️⃣ Накладний платіж (передоплата 100 грн)" }]
-        ],
-        resize_keyboard: true
+👤 ${order.name}
+📞 ${order.phone}
+🏙 ${order.city}
+📦 ${order.delivery}
+
+💳 Оберіть спосіб оплати:`,
+      {
+        reply_markup: {
+          keyboard: [
+            [{ text: "1️⃣ Повна оплата" }],
+            [{ text: "2️⃣ Накладний платіж (передоплата 100 грн)" }]
+          ],
+          resize_keyboard: true
+        }
       }
-    });
+    );
 
     return;
   }
