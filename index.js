@@ -1259,7 +1259,19 @@ if (
 🏙 ${order.city}
 📦 ${order.delivery}
 🛡 ${order.product}
-💰 ${payment}`
+💰 ${payment}`,
+  {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "📦 Створити ТТН",
+            callback_data: `ttn_${chatId}`
+          }
+        ]
+      ]
+    }
+  }
 );
 
 // якщо повна оплата
