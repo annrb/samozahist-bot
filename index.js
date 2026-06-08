@@ -557,7 +557,7 @@ if (data === "checkout") {
 
 if (action === "ttn") {
 
-  ttnState.set(adminChatId, {
+  ttnState.set(String(adminChatId), {
     customerId: telegramId
   });
 
