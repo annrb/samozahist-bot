@@ -747,6 +747,30 @@ const user = getUserData(msg, source);
 
   return;
 }
+	if (isAdmin(chatId) && ttnState.has(chatId)) {
+
+  const amount = text.replace(/\D/g, "");
+
+  if (!amount) {
+    await sendMessage(
+      chatId,
+      "❌ Введіть тільки суму цифрами"
+    );
+    return;
+  }
+
+  const data = ttnState.get(chatId);
+
+  await sendMessage(
+    chatId,
+    `✅ Сума накладного платежу: ${amount} грн`
+  );
+
+  ttnState.delete(chatId);
+
+  return;
+}
+	
   if (isAdmin(chatId) && replyState.has(chatId)) {
   const clientId = replyState.get(chatId);
 
