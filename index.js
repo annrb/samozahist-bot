@@ -747,7 +747,7 @@ const user = getUserData(msg, source);
 
   return;
 }
-	if (isAdmin(chatId) && ttnState.has(chatId)) {
+	if (isAdmin(chatId) && ttnState.has(String(chatId))) {
 
   const amount = text.replace(/\D/g, "");
 
