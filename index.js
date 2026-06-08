@@ -759,7 +759,7 @@ const user = getUserData(msg, source);
     return;
   }
 
-  const data = ttnState.get(chatId);
+  const data = ttnState.get(String(chatId));
 
   await sendMessage(
     chatId,
