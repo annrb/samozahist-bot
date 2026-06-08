@@ -583,6 +583,9 @@ if (data === "checkout") {
   // повідомлення менеджеру
   await sendMessage(adminChatId, "✅ Оплату підтверджено");
 
+	  selectedPayment.delete(String(telegramId));
+waitingPaymentProof.delete(String(telegramId));
+
   return;
 }
 
