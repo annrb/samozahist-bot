@@ -1018,7 +1018,13 @@ consultantCooldown.set(chatId, now);
   }
 
   // Скрін оплати
-  if (waitingPaymentProof.has(chatId) && (msg.photo || msg.document)) {
+if (
+  (msg.photo || msg.document) &&
+  (
+    waitingPaymentProof.has(chatId) ||
+    selectedPayment.has(chatId)
+  )
+) {
     waitingPaymentProof.delete(chatId);
 
     await sendMessage(
