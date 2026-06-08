@@ -553,6 +553,16 @@ if (data === "checkout") {
   return;
 }
 
+	if (action === "ttn") {
+
+  await sendMessage(
+    adminChatId,
+    "💰 Введіть суму накладного платежу:"
+  );
+
+  return;
+}
+
   if (action === "reply") {
   replyState.set(adminChatId, telegramId);
 
