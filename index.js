@@ -30,6 +30,8 @@ const broadcastState = new Map();
 const adminMenuUsers = new Set();
 const replyState = new Map();
 
+const ttnState = new Map();
+
 function isAdmin(chatId) {
   return String(chatId) === String(ADMIN_ID);
 }
