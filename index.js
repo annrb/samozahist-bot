@@ -555,7 +555,11 @@ if (data === "checkout") {
   return;
 }
 
-	if (action === "ttn") {
+if (action === "ttn") {
+
+  ttnState.set(adminChatId, {
+    customerId: telegramId
+  });
 
   await sendMessage(
     adminChatId,
