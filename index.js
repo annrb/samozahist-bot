@@ -766,7 +766,7 @@ const user = getUserData(msg, source);
     `✅ Сума накладного платежу: ${amount} грн`
   );
 
-  ttnState.delete(chatId);
+  ttnState.delete(String(chatId));
 
   return;
 }
