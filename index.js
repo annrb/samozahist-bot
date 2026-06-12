@@ -1478,6 +1478,8 @@ if (step) {
     return;
   }
 
+	console.log("CURRENT STEP =", step);
+	
   if (step === "lastName") {
 
 	  console.log("LASTNAME STEP WORKS");
