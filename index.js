@@ -213,6 +213,7 @@ if (body.callback_query) {
 
   const action = data.split("_")[0];
   const telegramId = data.split("_")[1];
+	console.log("CALLBACK =", data);
   
   if (action === "product") {
 
@@ -761,15 +762,40 @@ const user = getUserData(msg, source);
 
   const data = ttnState.get(String(chatId));
 
+await sendMessage(
+  chatId,
+  "⏳ Створюю ТТН..."
+);
+
+const response = await fetch(
+  `${SHEET_URL}?createTTN=1&telegramId=${data.customerId}&amount=${amount}`
+);
+
+const result = await response.json();
+
+if (result.success) {
+
   await sendMessage(
     chatId,
-    `✅ Сума накладного платежу: ${amount} грн`
+    `✅ ТТН створено
+
+📦 Номер:
+${result.ttn}`
   );
 
-  ttnState.delete(String(chatId));
+} else {
 
-  return;
+  await sendMessage(
+    chatId,
+    `❌ Помилка створення ТТН
+
+${result.error || ""}`
+  );
 }
+
+ttnState.delete(String(chatId));
+
+return;
 	
   if (isAdmin(chatId) && replyState.has(chatId)) {
   const clientId = replyState.get(chatId);
