@@ -761,6 +761,8 @@ const user = getUserData(msg, source);
   }
 
   const data = ttnState.get(String(chatId));
+console.log("TTN DATA =", data);
+console.log("AMOUNT =", amount);
 
 await sendMessage(
   chatId,
