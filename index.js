@@ -1631,10 +1631,9 @@ updateCRM({
 });
 
 return;
+});
 
 app.get("/", (req, res) => {
-  res.send("BOT WORKING");
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server started"));
