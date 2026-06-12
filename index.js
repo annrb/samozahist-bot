@@ -1355,8 +1355,17 @@ if (text === "2️⃣ Накладний платіж (передоплата 10
 }
 
 updateCRM({
-  ...user,
-  ...order,
+  telegramId: user.telegramId,
+  username: user.username,
+  profile: user.profile,
+  source: user.source,
+
+  name: order.name,
+  phone: order.phone,
+  city: order.city,
+  delivery: order.delivery,
+  product: order.product,
+
   payment,
   status: "🟢 Замовлення",
   comment: "Оформив замовлення"
