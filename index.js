@@ -796,6 +796,7 @@ ${result.error || ""}`
 ttnState.delete(String(chatId));
 
 return;
+}
 	
   if (isAdmin(chatId) && replyState.has(chatId)) {
   const clientId = replyState.get(chatId);
