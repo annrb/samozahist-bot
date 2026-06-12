@@ -1631,7 +1631,6 @@ updateCRM({
 });
 
 return;
-});
 
 app.get("/", (req, res) => {
 
