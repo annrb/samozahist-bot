@@ -1480,6 +1480,9 @@ if (step) {
 
   if (step === "lastName") {
 
+	  console.log("LASTNAME STEP WORKS");
+console.log("TEXT =", text);
+
     draft.lastName = text;
 
     orderDraft.set(chatId, draft);
