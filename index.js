@@ -9,7 +9,7 @@ const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
 const ADMIN_ID = 455696990;
 
 const SHEET_URL =
-"https://script.google.com/macros/library/d/184kWrHW4DShe2obuxdGth7mSV5ecN-Lo8t_8cca0EfuWuF-ZptBVOUVT/25";
+"https://script.google.com/macros/s/AKfycbz8NuUNsKobw5QuImcGiV31KwaKGCvTo-hewzxJs5E-g4rtR29CynIhjOY0zbbB9MG6/exec";
 
 const waitingReview = new Set();
 const waitingPaymentProof = new Set();
