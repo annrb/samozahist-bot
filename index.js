@@ -1378,23 +1378,24 @@ if (text === "1️⃣ Повна оплата") {
 }
 
 // якщо накладний
-if (text === "2️⃣ Накладний платіж (передоплата 100 грн)") {
-  selectedPayment.set(chatId, payment);
-  waitingPaymentProof.add(chatId);
+if (text === "2️⃣ Накладний платіж (оплата при отриманні)") {
+//  selectedPayment.set(chatId, payment);
+//  waitingPaymentProof.add(chatId);
 
   await sendMessage(
     chatId,
-    "✅ Замовлення прийнято!\n\n💳 Для підтвердження замовлення внесіть передоплату 100 грн 👇"
+    "✅ Замовлення прийнято!\n\n📦 Ви обрали накладний платіж.\nОплата здійснюється при отриманні у відділенні Нової Пошти."
   );
+	
 
-  await sendMessage(chatId, "4441 1144 4890 6972");
-  await sendMessage(chatId, "Отримувач: Ковальчук О.");
+ // await sendMessage(chatId, "4441 1144 4890 6972");
+ // await sendMessage(chatId, "Отримувач: Ковальчук О.");
 
-  await sendMessage(
-    chatId,
-    "📸 Після оплати надішліть скріншот платежу",
-    { reply_markup: mainKeyboard() }
-  );
+ // await sendMessage(
+ //   chatId,
+ //   "📸 Після оплати надішліть скріншот платежу",
+ //   { reply_markup: mainKeyboard() }
+ // );
 }
 
 updateCRM({
