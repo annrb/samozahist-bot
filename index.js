@@ -255,6 +255,10 @@ await telegramRequest("answerCallbackQuery", {
   return;
 }
 
+	if (data === "count") {
+  return;
+}
+	
 if (data === "plus" || data === "minus") {
 
   let qty = selectedQuantity.get(adminChatId) || 1;
