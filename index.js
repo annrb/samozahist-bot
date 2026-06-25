@@ -25,6 +25,7 @@ const orderStep = new Map();
 const orderDraft = new Map();
 
 const consultantCooldown = new Map();
+const waitingConsultant = new Set();
 
 const broadcastState = new Map();
 const adminMenuUsers = new Set();
