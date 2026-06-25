@@ -1097,8 +1097,8 @@ consultantCooldown.set(chatId, now);
 
   // Скрін оплати
 if (
-  (msg.photo || msg.document) &&
-  !waitingReview.has(chatId)
+  waitingPaymentProof.has(chatId) &&
+  (msg.photo || msg.document)
 ) {
     waitingPaymentProof.delete(chatId);
 
