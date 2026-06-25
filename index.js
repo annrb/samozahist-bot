@@ -85,42 +85,46 @@ function updateCRM(data) {
   }).catch(console.error);
 }
 
-async function sendMessage(chatId, text, extra = {}) {
+const REQUEST_TIMEOUT = 10000;
+
+async function telegramRequest(method, payload) {
   try {
     const controller = new AbortController();
 
     const timeout = setTimeout(() => {
       controller.abort();
-    }, 10000);
+    }, REQUEST_TIMEOUT);
 
-    const response = await fetch(
-      `${TELEGRAM_API}/sendMessage`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text,
-          ...extra
-        }),
-        signal: controller.signal
-      }
-    );
+    const response = await fetch(`${TELEGRAM_API}/${method}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
 
     clearTimeout(timeout);
 
-    return response;
+    if (!response.ok) {
+      console.error(`${method} ERROR:`, await response.text());
+      return null;
+    }
+
+    return await response.json();
 
   } catch (err) {
-    console.log(
-      "sendMessage ERROR:",
-      err.message
-    );
-
+    console.error(`${method} ERROR:`, err.message);
     return null;
   }
+}
+
+async function sendMessage(chatId, text, extra = {}) {
+  return telegramRequest("sendMessage", {
+    chat_id: chatId,
+    text,
+    ...extra
+  });
 }
 
 async function forwardMessage(chatId, fromChatId, messageId) {
