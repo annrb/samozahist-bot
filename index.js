@@ -128,14 +128,10 @@ async function sendMessage(chatId, text, extra = {}) {
 }
 
 async function forwardMessage(chatId, fromChatId, messageId) {
-  return fetch(`${TELEGRAM_API}/forwardMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: chatId,
-      from_chat_id: fromChatId,
-      message_id: messageId
-    })
+  return telegramRequest("forwardMessage", {
+    chat_id: chatId,
+    from_chat_id: fromChatId,
+    message_id: messageId
   });
 }
 
