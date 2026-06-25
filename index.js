@@ -1058,6 +1058,8 @@ if (lastRequest && now - lastRequest < 300000) {
 }
 
 consultantCooldown.set(chatId, now);
+	  waitingConsultant.add(chatId);
+	  
     await sendMessage(
       chatId,
       "💬 Напишіть коротко, для чого потрібен засіб самозахисту, і менеджер підкаже найкращий варіант."
