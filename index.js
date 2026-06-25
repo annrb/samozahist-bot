@@ -1629,6 +1629,10 @@ console.log("TEXT =", text);
     return;
   }
 }
+	if (!waitingConsultant.has(chatId)) {
+    return;
+}
+	
 // вільне повідомлення
 await Promise.all([
   sendMessage(
