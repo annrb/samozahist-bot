@@ -1634,6 +1634,13 @@ console.log("TEXT =", text);
 }
 	
 // вільне повідомлення
+
+if (!waitingConsultant.has(chatId)) {
+    return;
+}
+
+waitingConsultant.delete(chatId);
+
 await Promise.all([
   sendMessage(
     chatId,
