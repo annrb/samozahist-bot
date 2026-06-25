@@ -208,6 +208,10 @@ app.post("/", async (req, res) => {
 
 // inline-кнопки
 if (body.callback_query) {
+	const callbackId = body.callback_query.id;
+await telegramRequest("answerCallbackQuery", {
+  callback_query_id: callbackId
+});
   const data = body.callback_query.data;
   const adminChatId = body.callback_query.message.chat.id;
 
