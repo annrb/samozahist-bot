@@ -1622,7 +1622,7 @@ console.log("TEXT =", text);
         reply_markup: {
           keyboard: [
             [{ text: "1️⃣ Повна оплата" }],
-            [{ text: "2️⃣ Накладний платіж (передоплата 100 грн)" }]
+            [{ text: "2️⃣ Накладний платіж (оплата при отриманні)" }]
           ],
           resize_keyboard: true
         }
