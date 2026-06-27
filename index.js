@@ -567,6 +567,54 @@ if (data === "checkout") {
 
 if (action === "ttn") {
 
+  const crm = await fetch(
+    `${SHEET_URL}?telegramId=${telegramId}`
+  );
+
+  const order = await crm.json();
+
+  if (!order.success) {
+    await sendMessage(adminChatId, "❌ Замовлення не знайдено");
+    return;
+  }
+
+  // Повна оплата → одразу створюємо ТТН
+  if (order.payment !== "Накладний платіж") {
+
+    const params = new URLSearchParams({
+      createTTN: "1",
+      row: order.row,
+      name: order.name,
+      phone: order.phone,
+      city: order.city,
+      delivery: order.delivery,
+      payment: order.payment,
+      amount: 0
+    });
+
+    const response = await fetch(`${SHEET_URL}?${params}`);
+    const result = await response.json();
+
+    if (result.success) {
+
+      await sendMessage(
+        adminChatId,
+        `✅ ТТН створено\n\n📦 ${result.ttn}`
+      );
+
+    } else {
+
+      await sendMessage(
+        adminChatId,
+        `❌ ${result.error}`
+      );
+
+    }
+
+    return;
+  }
+
+  // Накладний платіж → просимо суму
   ttnState.set(String(adminChatId), {
     customerId: telegramId
   });
