@@ -782,12 +782,32 @@ console.log(
   `${SHEET_URL}?createTTN=1&telegramId=${data.customerId}&amount=${amount}`
 );
 
+const crm = await fetch(
+  `${SHEET_URL}?telegramId=${data.customerId}`
+);
+
+const order = await crm.json();
+
+if (!order.success) {
+  throw new Error("Замовлення не знайдено");
+}
+
+const params = new URLSearchParams({
+  createTTN: "1",
+  row: order.row,
+  name: order.name,
+  phone: order.phone,
+  city: order.city,
+  delivery: order.delivery,
+  payment: order.payment || "Передплата",
+  amount: amount
+});
+
 const response = await fetch(
-  `${SHEET_URL}?createTTN=1&telegramId=${data.customerId}&amount=${amount}`
+  `${SHEET_URL}?${params.toString()}`
 );
 
 const result = await response.json();
-
 console.log("RESULT =", JSON.stringify(result));
 
 if (result.success) {
