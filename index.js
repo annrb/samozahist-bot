@@ -573,6 +573,8 @@ if (action === "ttn") {
 
   const order = await crm.json();
 
+console.log("ORDER =", JSON.stringify(order));
+
   if (!order.success) {
     await sendMessage(adminChatId, "❌ Замовлення не знайдено");
     return;
@@ -835,6 +837,8 @@ const crm = await fetch(
 );
 
 const order = await crm.json();
+
+console.log("ORDER =", JSON.stringify(order));
 
 if (!order.success) {
   throw new Error("Замовлення не знайдено");
