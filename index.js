@@ -1476,6 +1476,8 @@ if (text === "2️⃣ Накладний платіж (оплата при от�
  // );
 }
 
+console.log("PHONE BEFORE CRM =", order.phone, typeof order.phone);
+	
 updateCRM({
   telegramId: user.telegramId,
   username: user.username,
