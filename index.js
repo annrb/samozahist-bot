@@ -184,7 +184,7 @@ const products = {
     name: "КОБРА-1Н 100 мл",
     price: 250
   },
-  //teren4: {
+  teren4: {
     name: "ТЕРЕН-4",
     price: 250
   },
