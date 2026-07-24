@@ -1420,13 +1420,19 @@ if (
   {
     reply_markup: {
       inline_keyboard: [
-        [
-          {
-            text: "📦 Створити ТТН",
-            callback_data: `ttn_${chatId}`
-          }
-        ]
-      ]
+  [
+    {
+      text: "📦 Створити ТТН",
+      callback_data: `ttn_${chatId}`
+    }
+  ],
+  [
+    {
+      text: "🚫 Заблокувати",
+      callback_data: `blacklist_${chatId}`
+    }
+  ]
+]
     }
   }
 );
