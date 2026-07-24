@@ -630,7 +630,47 @@ console.log("RAW =", JSON.stringify(order));
 
   return;
 }
+if (action === "blacklist") {
 
+  const crm = await fetch(
+    `${SHEET_URL}?telegramId=${telegramId}`
+  );
+
+  const customer = await crm.json();
+
+  if (!customer.success) {
+    await sendMessage(adminChatId, "❌ Клієнта не знайдено");
+    return;
+  }
+
+  const params = new URLSearchParams({
+    blacklist: "1",
+    telegramId: telegramId,
+    name: customer.name,
+    phone: customer.phone,
+    reason: "Заблоковано адміністратором"
+  });
+
+  const response = await fetch(
+    `${SHEET_URL}?${params.toString()}`
+  );
+
+  const result = await response.json();
+
+  if (result.success) {
+    await sendMessage(
+      adminChatId,
+      "✅ Клієнта додано до BLACKLIST"
+    );
+  } else {
+    await sendMessage(
+      adminChatId,
+      "❌ Не вдалося додати клієнта"
+    );
+  }
+
+  return;
+}
   if (action === "reply") {
   replyState.set(adminChatId, telegramId);
 
