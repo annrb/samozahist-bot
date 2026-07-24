@@ -742,6 +742,19 @@ if (!body.message) return;
 const msg = body.message;
 const chatId = msg.chat.id;
 const text = msg.text || "";
+	const check = await fetch(
+  `${SHEET_URL}?checkBlacklist=1&telegramId=${chatId}`
+);
+
+const blacklist = await check.json();
+
+if (blacklist.blocked) {
+  await sendMessage(
+    chatId,
+    "⛔ Ваш акаунт заблоковано.\n\nЯкщо ви вважаєте, що це помилка, зверніться до адміністратора."
+  );
+  return;
+}
   const caption = msg.caption || "";
 const source = sourceFromText(text);
 const user = getUserData(msg, source);
