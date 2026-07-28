@@ -678,7 +678,6 @@ if (action === "blacklist") {
 
   return;
 }
-  if (action === "reply") {
 	  if (action === "edit") {
 
   editState.set(adminChatId, {
@@ -702,6 +701,16 @@ if (action === "blacklist") {
         resize_keyboard: true
       }
     }
+  );
+
+  return;
+}
+	if (action === "reply") {
+  replyState.set(adminChatId, telegramId);
+
+  await sendMessage(
+    adminChatId,
+    `✍️ Напишіть повідомлення для клієнта (${telegramId})`
   );
 
   return;
