@@ -715,16 +715,7 @@ if (action === "blacklist") {
 
   return;
 }
-  replyState.set(adminChatId, telegramId);
-
-  await sendMessage(
-    adminChatId,
-    `✍️ Напишіть повідомлення для клієнта (${telegramId})`
-  );
-
-  return;
-}
-
+	
   if (action === "paid") {
   updateCRM({
     telegramId,
