@@ -534,6 +534,7 @@ if (data === "clearcart") {
           [{ text: "ТЕРЕН-4М — 290", callback_data: "product_teren4m" }],
           [{ text: "ТРИЗУБ-4 — 250", callback_data: "product_trizub4" }],
           [{ text: "КОБРА-1Н 50 мл — 200", callback_data: "product_cobra50" }]
+		  [{ text: "ТЕРЕН-1Б 50 мл — 220", callback_data: "product_teren1b" }],
         ]
       }
     }
