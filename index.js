@@ -179,27 +179,27 @@ function paymentKeyboard() {
 const products = {
   cobra_mvs: {
     name: "КОБРА-1 МВС",
-    price: 300
+    price: 330
   },
   cobra100: {
     name: "КОБРА-1Н 100 мл",
-    price: 250
+    price: 270
   },
   teren4: {
     name: "ТЕРЕН-4",
-    price: 250
+    price: 270
   },
   teren4m: {
     name: "ТЕРЕН-4М",
-    price: 290
+    price: 320
   },
   trizub4: {
     name: "ТРИЗУБ-4",
-    price: 250
+    price: 270
   },
   cobra50: {
     name: "КОБРА-1Н 50 мл",
-    price: 200
+    price: 220
   },
 	teren1b: {
   name: "ТЕРЕН-1Б 50 мл",
