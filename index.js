@@ -679,6 +679,33 @@ if (action === "blacklist") {
   return;
 }
   if (action === "reply") {
+	  if (action === "edit") {
+
+  editState.set(adminChatId, {
+    telegramId
+  });
+
+  await sendMessage(
+    adminChatId,
+    "✏️ Що потрібно змінити?",
+    {
+      reply_markup: {
+        keyboard: [
+          [{ text: "👤 ПІБ" }],
+          [{ text: "📱 Телефон" }],
+          [{ text: "🏙 Місто" }],
+          [{ text: "📦 Відділення" }],
+          [{ text: "🛒 Товар" }],
+          [{ text: "💳 Оплата" }],
+          [{ text: "❌ Скасувати" }]
+        ],
+        resize_keyboard: true
+      }
+    }
+  );
+
+  return;
+}
   replyState.set(adminChatId, telegramId);
 
   await sendMessage(
