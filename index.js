@@ -810,6 +810,39 @@ if (isAdmin(chatId) && editState.has(chatId)) {
     );
 
     return;
+	  state.value = text;
+
+const params = new URLSearchParams({
+  editOrder: "1",
+  telegramId: state.telegramId,
+  field: state.field,
+  value: text
+});
+
+const response = await fetch(
+  `${SHEET_URL}?${params.toString()}`
+);
+
+const result = await response.json();
+
+if (result.success) {
+  await sendMessage(
+    chatId,
+    "✅ Замовлення успішно оновлено",
+    {
+      reply_markup: adminKeyboard()
+    }
+  );
+} else {
+  await sendMessage(
+    chatId,
+    `❌ ${result.error}`
+  );
+}
+
+editState.delete(chatId);
+
+return;
   }
 
   // тут далі буде збереження в Google Sheets
