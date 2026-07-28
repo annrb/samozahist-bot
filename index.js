@@ -1480,11 +1480,17 @@ if (
 💰 ${payment}`,
   {
     reply_markup: {
-      inline_keyboard: [
+     inline_keyboard: [
   [
     {
       text: "📦 Створити ТТН",
       callback_data: `ttn_${chatId}`
+    }
+  ],
+  [
+    {
+      text: "✏️ Редагувати",
+      callback_data: `edit_${chatId}`
     }
   ],
   [
