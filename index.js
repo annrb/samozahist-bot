@@ -416,12 +416,12 @@ if (data === "more") {
     {
       reply_markup: {
         inline_keyboard: [
-          [{ text: "КОБРА-1 МВС — 300", callback_data: "product_cobra_mvs" }],
-          [{ text: "КОБРА-1Н 100 мл — 250", callback_data: "product_cobra100" }],
-          [{ text: "ТЕРЕН-4 — 250", callback_data: "product_teren4" }],
-          [{ text: "ТЕРЕН-4М — 290", callback_data: "product_teren4m" }],
-          [{ text: "ТРИЗУБ-4 — 250", callback_data: "product_trizub4" }],
-          [{ text: "КОБРА-1Н 50 мл — 200", callback_data: "product_cobra50" }]
+          [{ text: "КОБРА-1 МВС — 330", callback_data: "product_cobra_mvs" }],
+          [{ text: "КОБРА-1Н 100 мл — 270", callback_data: "product_cobra100" }],
+          [{ text: "ТЕРЕН-4 — 270", callback_data: "product_teren4" }],
+          [{ text: "ТЕРЕН-4М — 320", callback_data: "product_teren4m" }],
+          [{ text: "ТРИЗУБ-4 — 270", callback_data: "product_trizub4" }],
+          [{ text: "КОБРА-1Н 50 мл — 220", callback_data: "product_cobra50" }]
 		  [{ text: "ТЕРЕН-1Б 50 мл — 220", callback_data: "product_teren1b" }],
         ]
       }
@@ -529,12 +529,12 @@ if (data === "clearcart") {
     {
       reply_markup: {
         inline_keyboard: [
-          [{ text: "КОБРА-1 МВС — 300", callback_data: "product_cobra_mvs" }],
-          [{ text: "КОБРА-1Н 100 мл — 250", callback_data: "product_cobra100" }],
-          [{ text: "ТЕРЕН-4 — 250", callback_data: "product_teren4" }],
-          [{ text: "ТЕРЕН-4М — 290", callback_data: "product_teren4m" }],
-          [{ text: "ТРИЗУБ-4 — 250", callback_data: "product_trizub4" }],
-          [{ text: "КОБРА-1Н 50 мл — 200", callback_data: "product_cobra50" }]
+          [{ text: "КОБРА-1 МВС — 330", callback_data: "product_cobra_mvs" }],
+          [{ text: "КОБРА-1Н 100 мл — 270", callback_data: "product_cobra100" }],
+          [{ text: "ТЕРЕН-4 — 270", callback_data: "product_teren4" }],
+          [{ text: "ТЕРЕН-4М — 320", callback_data: "product_teren4m" }],
+          [{ text: "ТРИЗУБ-4 — 270", callback_data: "product_trizub4" }],
+          [{ text: "КОБРА-1Н 50 мл — 220", callback_data: "product_cobra50" }]
 		  [{ text: "ТЕРЕН-1Б 50 мл — 220", callback_data: "product_teren1b" }],
         ]
       }
@@ -1491,12 +1491,12 @@ await sendMessage(
       chatId,
       `🔥 Наш асортимент:
 
-1) КОБРА-1 МВС — 300 грн
-2) КОБРА-1Н 100 мл — 250 грн
-3) ТЕРЕН-4 — 250 грн
-4) ТЕРЕН-4М — 290 грн
-5) ТРИЗУБ-4 — 250 грн
-6) КОБРА-1Н 50 мл — 200 грн
+1) КОБРА-1 МВС — 330 грн
+2) КОБРА-1Н 100 мл — 270 грн
+3) ТЕРЕН-4 — 270 грн
+4) ТЕРЕН-4М — 320 грн
+5) ТРИЗУБ-4 — 270 грн
+6) КОБРА-1Н 50 мл — 220 грн
 7) ТЕРЕН-1Б 50 мл — 220 грн`
 );
 
@@ -1518,12 +1518,12 @@ await sendMessage(
     {
       reply_markup: {
         inline_keyboard: [
-          [{ text: "КОБРА-1 МВС — 300", callback_data: "product_cobra_mvs" }],
-          [{ text: "КОБРА-1Н 100 мл — 250", callback_data: "product_cobra100" }],
-          [{ text: "ТЕРЕН-4 — 250", callback_data: "product_teren4" }],
-          [{ text: "ТЕРЕН-4М — 290", callback_data: "product_teren4m" }],
-          [{ text: "ТРИЗУБ-4 — 250", callback_data: "product_trizub4" }],
-          [{ text: "КОБРА-1Н 50 мл — 200", callback_data: "product_cobra50" }],
+          [{ text: "КОБРА-1 МВС — 330", callback_data: "product_cobra_mvs" }],
+          [{ text: "КОБРА-1Н 100 мл — 270", callback_data: "product_cobra100" }],
+          [{ text: "ТЕРЕН-4 — 270", callback_data: "product_teren4" }],
+          [{ text: "ТЕРЕН-4М — 320", callback_data: "product_teren4m" }],
+          [{ text: "ТРИЗУБ-4 — 270", callback_data: "product_trizub4" }],
+          [{ text: "КОБРА-1Н 50 мл — 220", callback_data: "product_cobra50" }],
 		  [{ text: "ТЕРЕН-1Б 50 мл — 220", callback_data: "product_teren1b" }],
 		]
       }
