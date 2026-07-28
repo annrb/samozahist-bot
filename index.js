@@ -785,6 +785,44 @@ if (!body.message) return;
 const msg = body.message;
 const chatId = msg.chat.id;
 const text = msg.text || "";
+if (isAdmin(chatId) && editState.has(chatId)) {
+
+  const state = editState.get(chatId);
+
+  if (!state.field) {
+
+    if (text === "👤 ПІБ") state.field = "name";
+    else if (text === "📱 Телефон") state.field = "phone";
+    else if (text === "🏙 Місто") state.field = "city";
+    else if (text === "📦 Відділення") state.field = "delivery";
+    else if (text === "🛒 Товар") state.field = "product";
+    else if (text === "💳 Оплата") state.field = "payment";
+    else if (text === "❌ Скасувати") {
+      editState.delete(chatId);
+
+      await sendMessage(
+        chatId,
+        "❌ Редагування скасовано",
+        { reply_markup: adminKeyboard() }
+      );
+
+      return;
+    } else {
+      return;
+    }
+
+    editState.set(chatId, state);
+
+    await sendMessage(
+      chatId,
+      "✍️ Введіть нове значення:"
+    );
+
+    return;
+  }
+
+  // тут далі буде збереження в Google Sheets
+}
 	const check = await fetch(
   `${SHEET_URL}?checkBlacklist=1&telegramId=${chatId}`
 );
