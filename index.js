@@ -199,11 +199,11 @@ const products = {
   cobra50: {
     name: "КОБРА-1Н 50 мл",
     price: 200
-  }
+  },
 	teren1b: {
   name: "ТЕРЕН-1Б 50 мл",
   price: 220
-}
+},
 };
 
 app.post("/", async (req, res) => {
