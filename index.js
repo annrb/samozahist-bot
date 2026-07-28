@@ -30,6 +30,7 @@ const waitingConsultant = new Set();
 const broadcastState = new Map();
 const adminMenuUsers = new Set();
 const replyState = new Map();
+const editState = new Map();
 
 const ttnState = new Map();
 
