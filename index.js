@@ -724,8 +724,6 @@ if (action === "blacklist") {
   });
 
   // повідомлення клієнту
-  await sendMessage(
-    telegramId,
     await sendMessage(
   telegramId,
   `✅ Передоплату отримано!
