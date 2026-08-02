@@ -1670,14 +1670,14 @@ waitingPaymentProof.add(chatId);
 );
 	
 
- // await sendMessage(chatId, "4441 1144 4890 6972");
- // await sendMessage(chatId, "Отримувач: Ковальчук О.");
+ await sendMessage(chatId, "4441 1144 4890 6972");
+ await sendMessage(chatId, "Отримувач: Ковальчук О.");
 
- // await sendMessage(
- //   chatId,
- //   "📸 Після оплати надішліть скріншот платежу",
- //   { reply_markup: mainKeyboard() }
- // );
+ await sendMessage(
+    chatId,
+    "📸 Після оплати надішліть скріншот платежу",
+    { reply_markup: mainKeyboard() }
+  );
 }
 
 console.log("PHONE BEFORE CRM =", order.phone, typeof order.phone);
