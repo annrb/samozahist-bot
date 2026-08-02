@@ -1656,7 +1656,7 @@ if (text === "1️⃣ Повна оплата") {
 }
 
 // якщо накладний
-if (text === "2️⃣ Накладний платіж (оплата при отриманні)") {
+if (text === "2️⃣ Накладний платіж (передоплата 100 грн, решта на пошті)") {
 //  selectedPayment.set(chatId, payment);
 //  waitingPaymentProof.add(chatId);
 
