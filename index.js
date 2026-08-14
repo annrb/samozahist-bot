@@ -921,6 +921,28 @@ const response = await fetch(
 const result = await response.json();
 
 if (result.success) {
+
+  const crmResponse = await fetch(
+    `${SHEET_URL}?telegramId=${state.telegramId}`
+  );
+
+  const order = await crmResponse.json();
+
+  if (order.success) {
+    await sendMessage(
+      ADMIN_ID,
+      `✏️ ЗАМОВЛЕННЯ ОНОВЛЕНО
+
+👤 ${order.name || "—"}
+🔗 Telegram: ${order.username || "—"}
+📞 ${order.phone || "—"}
+🏙 ${order.city || "—"}
+📦 ${order.delivery || "—"}
+🛒 ${order.product || "—"}
+💳 ${order.payment || "—"}`
+    );
+  }
+
   await sendMessage(
     chatId,
     "✅ Замовлення успішно оновлено",
@@ -928,6 +950,7 @@ if (result.success) {
       reply_markup: adminKeyboard()
     }
   );
+
 } else {
   await sendMessage(
     chatId,
