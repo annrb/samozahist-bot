@@ -1977,7 +1977,17 @@ console.log("TEXT =", text);
 
   if (step === "delivery") {
 
-    draft.delivery = text;
+  const deliveryNumber = text.trim();
+
+  if (!/^\d+$/.test(deliveryNumber)) {
+    await sendMessage(
+      chatId,
+      "❌ Введіть тільки номер відділення або поштомату цифрами.\n\nНаприклад: 25"
+    );
+    return;
+  }
+
+  draft.delivery = deliveryNumber;
 
     const order = {
       name:
