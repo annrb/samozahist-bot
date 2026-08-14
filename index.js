@@ -829,6 +829,62 @@ const response = await fetch(
 const result = await response.json();
 
 if (result.success) {
+
+  // Отримуємо вже оновлене замовлення
+  const crmResponse = await fetch(
+    `${SHEET_URL}?telegramId=${state.telegramId}`
+  );
+
+  const order = await crmResponse.json();
+
+  if (order.success) {
+
+    await sendMessage(
+      ADMIN_ID,
+      `✏️ ЗАМОВЛЕННЯ ОНОВЛЕНО
+
+👤 ${order.name}
+🔗 Telegram: ${order.username || "немає"}
+📞 ${order.phone}
+🏙 ${order.city}
+📦 ${order.delivery}
+🛡 ${order.product || "—"}
+💰 ${order.payment || "—"}`,
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "📦 Створити ТТН",
+                callback_data: `ttn_${state.telegramId}`
+              }
+            ],
+            [
+              {
+                text: "✏️ Редагувати",
+                callback_data: `edit_${state.telegramId}`
+              }
+            ],
+            [
+              {
+                text: "🚫 Заблокувати",
+                callback_data: `blacklist_${state.telegramId}`
+              }
+            ]
+          ]
+        }
+      }
+    );
+
+  } else {
+
+    await sendMessage(
+      ADMIN_ID,
+      "⚠️ Замовлення оновлено, але не вдалося отримати його дані повторно."
+    );
+
+  }
+
   await sendMessage(
     chatId,
     "✅ Замовлення успішно оновлено",
@@ -836,6 +892,8 @@ if (result.success) {
       reply_markup: adminKeyboard()
     }
   );
+
+} else {
 } else {
   await sendMessage(
     chatId,
