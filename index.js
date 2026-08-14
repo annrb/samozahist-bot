@@ -894,7 +894,6 @@ if (result.success) {
   );
 
 } else {
-} else {
   await sendMessage(
     chatId,
     `❌ ${result.error}`
