@@ -1378,49 +1378,50 @@ if (
   waitingPaymentProof.has(chatId) &&
   (msg.photo || msg.document)
 ) {
-    waitingPaymentProof.delete(chatId);
+  waitingPaymentProof.delete(chatId);
+  waitingReview.delete(chatId);
 
-    await sendMessage(
-      chatId,
-      "✅ Скрін отримано. Менеджер перевірить оплату.",
-      { reply_markup: mainKeyboard() }
-    );
+  await sendMessage(
+    chatId,
+    "✅ Скрін отримано. Менеджер перевірить оплату.",
+    { reply_markup: mainKeyboard() }
+  );
 
-    await forwardMessage(ADMIN_ID, chatId, msg.message_id);
+  await forwardMessage(ADMIN_ID, chatId, msg.message_id);
 
-await sendMessage(
-  ADMIN_ID,
-  `💳 Новий скрін оплати від ${user.name}`,
-  {
-    reply_markup: {
-  inline_keyboard: [
-  [
+  await sendMessage(
+    ADMIN_ID,
+    `💳 Новий скрін оплати від ${user.name}`,
     {
-      text: "✅ Підтвердити оплату",
-      callback_data: `paid_${user.telegramId}`
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "✅ Підтвердити оплату",
+              callback_data: `paid_${user.telegramId}`
+            }
+          ],
+          [
+            {
+              text: "❌ Проблема",
+              callback_data: `problem_${user.telegramId}`
+            }
+          ]
+        ]
+      }
     }
-  ],
-  [
-    {
-      text: "❌ Проблема",
-      callback_data: `problem_${user.telegramId}`
-    }
-  ]
-]
-    }
-  }
-);
+  );
 
-   updateCRM({
-  ...user,
-  payment: selectedPayment.get(chatId) || "",
-  paymentStatus: "📸 Надіслав скрін",
-  status: "🔵 Очікує перевірки оплати",
-  comment: "Надіслав скрін оплати"
-});
-    
-    return;
-  }
+  updateCRM({
+    ...user,
+    payment: selectedPayment.get(chatId) || "",
+    paymentStatus: "📸 Надіслав скрін",
+    status: "🔵 Очікує перевірки оплати",
+    comment: "Надіслав скрін оплати"
+  });
+
+  return;
+}
   if (text === "💬 Консультант") {
   const lastRequest = consultantCooldown.get(chatId);
   const now = Date.now();
