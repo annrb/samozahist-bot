@@ -1769,7 +1769,15 @@ https://t.me/balon_kastet
 }
 
 if (text === "📸 Надіслати скрін оплати") {
+  waitingReview.delete(chatId);
   waitingPaymentProof.add(chatId);
+
+  await sendMessage(
+    chatId,
+    "📸 Надішліть скріншот оплати одним повідомленням"
+  );
+  return;
+}
 
   await sendMessage(
     chatId,
