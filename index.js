@@ -1653,6 +1653,7 @@ if (
 
 // якщо повна оплата
 if (text === "1️⃣ Повна оплата") {
+  waitingReview.delete(chatId);
   selectedPayment.set(chatId, payment);
   waitingPaymentProof.add(chatId);
 
