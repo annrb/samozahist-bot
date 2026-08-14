@@ -1620,6 +1620,7 @@ if (
   `🆕 НОВЕ ЗАМОВЛЕННЯ
 
 👤 ${order.name}
+🔗 Telegram: ${user.username}
 📞 ${order.phone}
 🏙 ${order.city}
 📦 ${order.delivery}
