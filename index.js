@@ -1044,6 +1044,18 @@ const user = getUserData(msg, source);
     );
     return;
   }
+	if (text === "📦 Наявність товарів" && isAdmin(chatId)) {
+
+  await sendMessage(
+    chatId,
+    "📦 Керування наявністю товарів:\n\n🟢 — є в наявності\n🔴 — немає в наявності",
+    {
+      reply_markup: availabilityKeyboard()
+    }
+  );
+
+  return;
+}
 
   if (text === "🏠 Назад" && isAdmin(chatId)) {
     await sendMessage(
