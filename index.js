@@ -463,7 +463,6 @@ x${item.qty}
 }
 
 if (data === "more") {
-	
 
   selectedQuantity.set(adminChatId, 1);
 
@@ -471,23 +470,12 @@ if (data === "more") {
     adminChatId,
     "🛒 Оберіть ще товар:",
     {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "КОБРА-1 МВС — 330", callback_data: "product_cobra_mvs" }],
-          [{ text: "КОБРА-1Н 100 мл — 270", callback_data: "product_cobra100" }],
-          [{ text: "ТЕРЕН-4 — 270", callback_data: "product_teren4" }],
-          [{ text: "ТЕРЕН-4М — 320", callback_data: "product_teren4m" }],
-          [{ text: "ТРИЗУБ-4 — 270", callback_data: "product_trizub4" }],
-          [{ text: "КОБРА-1Н 50 мл — 220", callback_data: "product_cobra50" }]
-		  [{ text: "ТЕРЕН-1Б 50 мл — 220", callback_data: "product_teren1b" }],
-        ]
-      }
+      reply_markup: productsKeyboard()
     }
   );
 
   return;
 }
-
 if (data === "removeitem") {
 
   let userCart =
