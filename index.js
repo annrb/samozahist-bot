@@ -1652,17 +1652,18 @@ if (
   ].includes(text);
 
   if (text === "🛒 Асортимент") {
-    await sendMessage(
-      chatId,
-      `🔥 Наш асортимент:
+    const availableProducts = Object.entries(products)
+  .filter(([key]) => productAvailability.get(key))
+  .map(([key, product], index) =>
+    `${index + 1}) ${product.name} — ${product.price} грн`
+  )
+  .join("\n");
 
-1) КОБРА-1 МВС — 330 грн
-2) КОБРА-1Н 100 мл — 270 грн
-3) ТЕРЕН-4 — 270 грн
-4) ТЕРЕН-4М — 320 грн
-5) ТРИЗУБ-4 — 270 грн
-6) КОБРА-1Н 50 мл — 220 грн
-7) ТЕРЕН-1Б 50 мл — 220 грн`
+await sendMessage(
+  chatId,
+  `🔥 Наш асортимент:
+
+${availableProducts}`
 );
 
     updateCRM({
