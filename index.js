@@ -41,9 +41,10 @@ function isAdmin(chatId) {
 function adminKeyboard() {
   return {
     keyboard: [
-      [{ text: "📣 Розсилка" }],
-      [{ text: "📊 Статистика" }],
-      [{ text: "🏠 Назад" }]
+  [{ text: "📣 Розсилка" }],
+  [{ text: "📊 Статистика" }],
+  [{ text: "📦 Наявність товарів" }],
+  [{ text: "🏠 Назад" }]
     ],
     resize_keyboard: true
   };
