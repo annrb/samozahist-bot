@@ -249,7 +249,34 @@ await telegramRequest("answerCallbackQuery", {
 });
   const data = body.callback_query.data;
   const adminChatId = body.callback_query.message.chat.id;
+// ===== ЗМІНА НАЯВНОСТІ =====
 
+if (data.startsWith("stock_")) {
+
+  if (!isAdmin(adminChatId)) {
+    return;
+  }
+
+  const productKey = data.replace("stock_", "");
+
+  if (!products[productKey]) {
+    return;
+  }
+
+  const current = productAvailability.get(productKey) ?? true;
+
+  productAvailability.set(productKey, !current);
+
+  await sendMessage(
+    adminChatId,
+    "📦 Керування наявністю товарів:",
+    {
+      reply_markup: availabilityKeyboard()
+    }
+  );
+
+  return;
+}
   const action = data.split("_")[0];
   const telegramId = data.split("_")[1];
 	console.log("CALLBACK =", data);
