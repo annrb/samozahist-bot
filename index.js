@@ -206,6 +206,35 @@ const products = {
   price: 220
 },
 };
+// ===== НАЯВНІСТЬ ТОВАРІВ =====
+
+const productAvailability = new Map(
+  Object.keys(products).map(key => [key, true])
+);
+
+function productsKeyboard() {
+  return {
+    inline_keyboard: Object.entries(products)
+      .filter(([key]) => productAvailability.get(key))
+      .map(([key, product]) => [
+        {
+          text: `${product.name} — ${product.price}`,
+          callback_data: `product_${key}`
+        }
+      ])
+  };
+}
+
+function availabilityKeyboard() {
+  return {
+    inline_keyboard: Object.entries(products).map(([key, product]) => [
+      {
+        text: `${productAvailability.get(key) ? "🟢" : "🔴"} ${product.name}`,
+        callback_data: `stock_${key}`
+      }
+    ])
+  };
+}
 
 app.post("/", async (req, res) => {
   res.sendStatus(200); // відповідаємо Telegram одразу
