@@ -212,6 +212,24 @@ const products = {
 const productAvailability = new Map(
   Object.keys(products).map(key => [key, true])
 );
+async function loadProductAvailability() {
+  try {
+    const response = await fetch(
+      `${SHEET_URL}?action=getProductAvailability`
+    );
+
+    const data = await response.json();
+
+    Object.entries(data).forEach(([key, value]) => {
+      productAvailability.set(key, value);
+    });
+
+    console.log("PRODUCT AVAILABILITY LOADED:", data);
+
+  } catch (error) {
+    console.error("LOAD PRODUCT AVAILABILITY ERROR:", error);
+  }
+}
 
 function productsKeyboard() {
   return {
