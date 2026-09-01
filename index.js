@@ -285,6 +285,20 @@ if (data.startsWith("stock_")) {
   const current = productAvailability.get(productKey) ?? true;
 
   productAvailability.set(productKey, !current);
+	try {
+  await fetch(
+    `${SHEET_URL}?action=setProductAvailability&productKey=${encodeURIComponent(productKey)}&available=${!current}`
+  );
+
+  console.log(
+    "PRODUCT AVAILABILITY SAVED:",
+    productKey,
+    !current
+  );
+
+} catch (error) {
+  console.error("SAVE PRODUCT AVAILABILITY ERROR:", error);
+}
 
   await sendMessage(
     adminChatId,
