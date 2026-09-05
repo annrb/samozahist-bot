@@ -2275,4 +2275,5 @@ app.listen(PORT, async () => {
   console.log("Server started");
 
   await loadProductAvailability();
+	await loadProductPrices();
 });
