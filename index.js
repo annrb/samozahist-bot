@@ -1111,7 +1111,7 @@ const user = getUserData(msg, source);
     );
     return;
   }
-if (isAdmin(chatId) && priceState.has(chatId)) {
+if (isAdmin(chatId)) {
   const productKeys = {
     "КОБРА-1 МВС": "cobra_mvs",
     "КОБРА-1Н 100 мл": "cobra100",
