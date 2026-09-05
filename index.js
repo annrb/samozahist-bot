@@ -179,6 +179,27 @@ function paymentKeyboard() {
   };
 }
 
+async function loadProductPrices() {
+  try {
+    const response = await fetch(
+      `${SHEET_URL}?action=getProductPrices`
+    );
+
+    const prices = await response.json();
+
+    for (const productKey in prices) {
+      if (products[productKey]) {
+        products[productKey].price = Number(prices[productKey]);
+      }
+    }
+
+    console.log("✅ Ціни завантажено з Google Sheets:", prices);
+  } catch (error) {
+    console.error("❌ Помилка завантаження цін:", error);
+  }
+}
+
+
 const products = {
   cobra_mvs: {
     name: "КОБРА-1 МВС",
