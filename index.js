@@ -1141,7 +1141,51 @@ if (isAdmin(chatId) && priceState.has(chatId)) {
   }
 }
 	
+if (isAdmin(chatId) && priceState.has(chatId)) {
+  const productKey = priceState.get(chatId);
 
+  if (text === "❌ Скасувати") {
+    priceState.delete(chatId);
+
+    await sendMessage(
+      chatId,
+      "❌ Зміну ціни скасовано.",
+      {
+        reply_markup: { keyboard: adminKeyboard().keyboard, resize_keyboard: true }
+      }
+    );
+
+    return;
+  }
+
+  const newPrice = Number(text);
+
+  if (!Number.isInteger(newPrice) || newPrice <= 0) {
+    await sendMessage(
+      chatId,
+      "❗ Введіть коректну ціну тільки цифрами.\nНаприклад: 350"
+    );
+
+    return;
+  }
+
+  products[productKey].price = newPrice;
+  priceState.delete(chatId);
+
+  await sendMessage(
+    chatId,
+    `✅ Ціну змінено!\n\n${products[productKey].name}\nНова ціна: ${newPrice} грн`,
+    {
+      reply_markup: {
+        keyboard: adminKeyboard().keyboard,
+        resize_keyboard: true
+      }
+    }
+  );
+
+  return;
+}
+	
   if (text === "📣 Розсилка" && isAdmin(chatId)) {
     broadcastState.set(chatId, { step: "choose_audience" });
 
