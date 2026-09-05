@@ -1111,6 +1111,36 @@ const user = getUserData(msg, source);
     );
     return;
   }
+if (isAdmin(chatId) && priceState.has(chatId)) {
+  const productKeys = {
+    "КОБРА-1 МВС": "cobra_mvs",
+    "КОБРА-1Н 100 мл": "cobra100",
+    "ТЕРЕН-4": "teren4",
+    "ТЕРЕН-4М": "teren4m",
+    "ТРИЗУБ-4": "trizub4",
+    "КОБРА-1Н 50 мл": "cobra50",
+    "ТЕРЕН-1Б 50 мл": "teren1b"
+  };
+
+  if (productKeys[text]) {
+    const productKey = productKeys[text];
+    priceState.set(chatId, productKey);
+
+    await sendMessage(
+      chatId,
+      `💰 Поточна ціна: ${products[productKey].price} грн\n\nВведіть нову ціну:`,
+      {
+        reply_markup: {
+          keyboard: [[{ text: "❌ Скасувати" }]],
+          resize_keyboard: true
+        }
+      }
+    );
+
+    return;
+  }
+}
+	
 
   if (text === "📣 Розсилка" && isAdmin(chatId)) {
     broadcastState.set(chatId, { step: "choose_audience" });
