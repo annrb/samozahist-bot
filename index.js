@@ -1170,6 +1170,13 @@ if (isAdmin(chatId) && priceState.has(chatId)) {
   }
 
   products[productKey].price = newPrice;
+	try {
+  await fetch(
+    `${SHEET_URL}?action=setProductPrice&productKey=${encodeURIComponent(productKey)}&price=${newPrice}`
+  );
+} catch (error) {
+  console.error("Помилка збереження ціни:", error);
+}
   priceState.delete(chatId);
 
   await sendMessage(
