@@ -1078,6 +1078,30 @@ const user = getUserData(msg, source);
   return;
 }
 
+	if (text === "💰 Зміна цін" && isAdmin(chatId)) {
+  await sendMessage(
+    chatId,
+    "💰 Оберіть товар, для якого хочете змінити ціну:",
+    {
+      reply_markup: {
+        keyboard: [
+          [{ text: "КОБРА-1 МВС" }],
+          [{ text: "КОБРА-1Н 100 мл" }],
+          [{ text: "ТЕРЕН-4" }],
+          [{ text: "ТЕРЕН-4М" }],
+          [{ text: "ТРИЗУБ-4" }],
+          [{ text: "КОБРА-1Н 50 мл" }],
+          [{ text: "ТЕРЕН-1Б 50 мл" }],
+          [{ text: "❌ Скасувати" }]
+        ],
+        resize_keyboard: true
+      }
+    }
+  );
+
+  return;
+}
+	
   if (text === "🏠 Назад" && isAdmin(chatId)) {
     await sendMessage(
       chatId,
