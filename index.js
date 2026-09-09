@@ -1166,6 +1166,54 @@ const user = getUserData(msg, source);
 
   return;
 }
+	if (isAdmin(chatId) && bonusState.has(chatId)) {
+  const state = bonusState.get(chatId);
+
+  if (state.step === "type") {
+
+    if (text === "❌ Скасувати") {
+      bonusState.delete(chatId);
+
+      await sendMessage(
+        chatId,
+        "❌ Створення бонус-коду скасовано.",
+        { reply_markup: adminKeyboard() }
+      );
+
+      return;
+    }
+
+    if (
+      text !== "🔢 Знижка %" &&
+      text !== "💰 Знижка в грн" &&
+      text !== "🎁 Безкоштовний товар"
+    ) {
+      return;
+    }
+
+    state.type = text;
+    state.step = "value";
+
+    bonusState.set(chatId, state);
+
+    await sendMessage(
+      chatId,
+      text === "🎁 Безкоштовний товар"
+        ? "🎁 Вкажіть назву товару:"
+        : "💰 Вкажіть розмір бонусу числом:",
+      {
+        reply_markup: {
+          keyboard: [
+            [{ text: "❌ Скасувати" }]
+          ],
+          resize_keyboard: true
+        }
+      }
+    );
+
+    return;
+  }
+}
 	
   if (text === "🏠 Назад" && isAdmin(chatId)) {
     await sendMessage(
