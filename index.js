@@ -1301,30 +1301,6 @@ const user = getUserData(msg, source);
       return;
     }
 
-    state.type = text;
-    state.step = "value";
-
-    bonusState.set(chatId, state);
-
-    await sendMessage(
-      chatId,
-      text === "🎁 Безкоштовний товар"
-        ? "🎁 Вкажіть назву товару:"
-        : "💰 Вкажіть розмір бонусу числом:",
-      {
-        reply_markup: {
-          keyboard: [
-            [{ text: "❌ Скасувати" }]
-          ],
-          resize_keyboard: true
-        }
-      }
-    );
-
-    return;
-  }
-}
-
     if (text === "❌ Скасувати") {
       bonusState.delete(chatId);
 
