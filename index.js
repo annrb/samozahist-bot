@@ -1324,10 +1324,6 @@ const user = getUserData(msg, source);
     return;
   }
 }
-		 if (isAdmin(chatId) && bonusState.has(chatId)) {
-  const state = bonusState.get(chatId);
-
-  if (state.step === "expires") {
 
     if (text === "❌ Скасувати") {
       bonusState.delete(chatId);
