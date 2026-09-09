@@ -1837,7 +1837,7 @@ ${availableProducts}`
   return;
 }
 
- if (text === "💳 Оплата / доставка") {
+if (text === "💳 Оплата / доставка") {
   await sendMessage(
     chatId,
     `💳 Варіанти оплати та доставки
@@ -1855,12 +1855,15 @@ ${availableProducts}`
 🚚 Доставка — Новою Поштою.
 
 Якщо вже здійснили передоплату — надішліть скріншот 📸`,
-   
+    { reply_markup: paymentKeyboard() }
+  );
+
   updateCRM({
     ...user,
     status: "🟠 Готується до замовлення",
     comment: "Дивився оплату / доставку"
   });
+
   return;
 }
       { reply_markup: paymentKeyboard() }
