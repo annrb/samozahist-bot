@@ -1166,22 +1166,6 @@ const user = getUserData(msg, source);
 
   return;
 }
-	if (isAdmin(chatId) && bonusState.has(chatId)) {
-  const state = bonusState.get(chatId);
-
-  if (state.step === "type") {
-
-    if (text === "❌ Скасувати") {
-      bonusState.delete(chatId);
-
-      await sendMessage(
-        chatId,
-        "❌ Створення бонус-коду скасовано.",
-        { reply_markup: adminKeyboard() }
-      );
-
-      return;
-    }
 	  if (isAdmin(chatId) && bonusState.has(chatId)) {
   const state = bonusState.get(chatId);
 
@@ -1209,6 +1193,7 @@ const user = getUserData(msg, source);
 
     state.type = text;
     state.step = "value";
+	  
 
     bonusState.set(chatId, state);
 
@@ -1220,6 +1205,83 @@ const user = getUserData(msg, source);
       {
         reply_markup: {
           keyboard: [
+            [{ text: "❌ Скасувати" }]
+          ],
+          resize_keyboard: true
+        }
+      }
+    );
+
+    return;
+  }
+}
+	if (isAdmin(chatId) && bonusState.has(chatId)) {
+  const state = bonusState.get(chatId);
+
+  if (state.step === "value") {
+
+    if (text === "❌ Скасувати") {
+      bonusState.delete(chatId);
+
+      await sendMessage(
+        chatId,
+        "❌ Створення бонус-коду скасовано.",
+        { reply_markup: adminKeyboard() }
+      );
+
+      return;
+    }
+
+    if (state.type === "🔢 Знижка %") {
+      const value = Number(text);
+
+      if (!Number.isInteger(value) || value < 1 || value > 100) {
+        await sendMessage(
+          chatId,
+          "❗ Введіть ціле число від 1 до 100."
+        );
+        return;
+      }
+
+      state.value = value;
+    }
+
+    if (state.type === "💰 Знижка в грн") {
+      const value = Number(text);
+
+      if (!Number.isInteger(value) || value < 1) {
+        await sendMessage(
+          chatId,
+          "❗ Введіть суму знижки цілим числом."
+        );
+        return;
+      }
+
+      state.value = value;
+    }
+
+    if (state.type === "🎁 Безкоштовний товар") {
+      if (text.length < 2) {
+        await sendMessage(
+          chatId,
+          "❗ Вкажіть назву товару."
+        );
+        return;
+      }
+
+      state.value = text.trim();
+    }
+
+    state.step = "expires";
+    bonusState.set(chatId, state);
+
+    await sendMessage(
+      chatId,
+      "📅 Вкажіть дату завершення дії бонус-коду у форматі:\n\nДД.ММ.РРРР\n\nАбо оберіть «♾ Без терміну»",
+      {
+        reply_markup: {
+          keyboard: [
+            [{ text: "♾ Без терміну" }],
             [{ text: "❌ Скасувати" }]
           ],
           resize_keyboard: true
@@ -1258,6 +1320,205 @@ const user = getUserData(msg, source);
         }
       }
     );
+
+    return;
+  }
+}
+		 if (isAdmin(chatId) && bonusState.has(chatId)) {
+  const state = bonusState.get(chatId);
+
+  if (state.step === "expires") {
+
+    if (text === "❌ Скасувати") {
+      bonusState.delete(chatId);
+
+      await sendMessage(
+        chatId,
+        "❌ Створення бонус-коду скасовано.",
+        { reply_markup: adminKeyboard() }
+      );
+
+      return;
+    }
+
+    if (text === "♾ Без терміну") {
+      state.expires = "";
+    } else {
+
+      const match = text.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+
+      if (!match) {
+        await sendMessage(
+          chatId,
+          "❗ Невірний формат дати.\n\nВикористовуйте: ДД.ММ.РРРР"
+        );
+        return;
+      }
+
+      const day = Number(match[1]);
+      const month = Number(match[2]);
+      const year = Number(match[3]);
+
+      const date = new Date(year, month - 1, day);
+
+      if (
+        date.getFullYear() !== year ||
+        date.getMonth() !== month - 1 ||
+        date.getDate() !== day
+      ) {
+        await sendMessage(
+          chatId,
+          "❗ Такої дати не існує. Введіть правильну дату."
+        );
+        return;
+      }
+
+      state.expires = text;
+    }
+
+    state.step = "uses";
+    bonusState.set(chatId, state);
+
+    await sendMessage(
+      chatId,
+      "🔢 Вкажіть максимальну кількість використань бонус-коду:",
+      {
+        reply_markup: {
+          keyboard: [
+            [{ text: "♾ Без обмеження" }],
+            [{ text: "❌ Скасувати" }]
+          ],
+          resize_keyboard: true
+        }
+      }
+    );
+
+    return;
+  }
+}
+if (isAdmin(chatId) && bonusState.has(chatId)) {
+  const state = bonusState.get(chatId);
+
+  if (state.step === "uses") {
+
+    if (text === "❌ Скасувати") {
+      bonusState.delete(chatId);
+
+      await sendMessage(
+        chatId,
+        "❌ Створення бонус-коду скасовано.",
+        { reply_markup: adminKeyboard() }
+      );
+
+      return;
+    }
+
+    if (text === "♾ Без обмеження") {
+      state.uses = "";
+    } else {
+      const uses = Number(text);
+
+      if (!Number.isInteger(uses) || uses < 1) {
+        await sendMessage(
+          chatId,
+          "❗ Введіть ціле число більше 0."
+        );
+        return;
+      }
+
+      state.uses = uses;
+    }
+
+    state.step = "create";
+    bonusState.set(chatId, state);
+
+    await sendMessage(
+      chatId,
+      "🎁 Дані бонус-коду отримано.\n\nСтворити бонус-код?",
+      {
+        reply_markup: {
+          keyboard: [
+            [{ text: "✅ Створити" }],
+            [{ text: "❌ Скасувати" }]
+          ],
+          resize_keyboard: true
+        }
+      }
+    );
+
+    return;
+  }
+}
+if (isAdmin(chatId) && bonusState.has(chatId)) {
+  const state = bonusState.get(chatId);
+
+  if (state.step === "create") {
+
+    if (text === "❌ Скасувати") {
+      bonusState.delete(chatId);
+
+      await sendMessage(
+        chatId,
+        "❌ Створення бонус-коду скасовано.",
+        { reply_markup: adminKeyboard() }
+      );
+
+      return;
+    }
+
+    if (text !== "✅ Створити") {
+      return;
+    }
+
+    const code =
+      "BONUS-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 8)
+        .toUpperCase();
+
+    try {
+
+      const params = new URLSearchParams({
+        action: "createBonusCode",
+        code: code,
+        type: state.type,
+        value: String(state.value),
+        expires: state.expires || "",
+        uses: state.uses || ""
+      });
+
+      const response = await fetch(
+        `${SHEET_URL}?${params.toString()}`
+      );
+
+      const result = await response.json();
+
+      if (!result.success) {
+        await sendMessage(
+          chatId,
+          `❌ Не вдалося створити бонус-код.\n\n${result.error || "Невідома помилка"}`
+        );
+        return;
+      }
+
+      bonusState.delete(chatId);
+
+      await sendMessage(
+        chatId,
+        `✅ Бонус-код створено!\n\n🎁 Код: ${code}\n📌 Тип: ${state.type}\n💰 Значення: ${state.value}\n📅 Діє до: ${state.expires || "без терміну"}\n🔢 Використань: ${state.uses || "без обмеження"}`,
+        { reply_markup: adminKeyboard() }
+      );
+
+    } catch (error) {
+
+      console.error("BONUS CODE ERROR:", error);
+
+      await sendMessage(
+        chatId,
+        "❌ Помилка під час створення бонус-коду."
+      );
+    }
 
     return;
   }
