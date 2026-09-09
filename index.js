@@ -1855,9 +1855,7 @@ ${availableProducts}`
 🚚 Доставка — Новою Поштою.
 
 Якщо вже здійснили передоплату — надішліть скріншот 📸`,
-    { reply_markup: paymentKeyboard() }
-  );
-
+   
   updateCRM({
     ...user,
     status: "🟠 Готується до замовлення",
