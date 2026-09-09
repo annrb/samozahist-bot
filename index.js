@@ -1124,6 +1124,26 @@ const user = getUserData(msg, source);
 
   return;
 }
+	  if (text === "🎁 Бонус-коди" && isAdmin(chatId)) {
+    await sendMessage(
+      chatId,
+      "🎁 Керування бонус-кодами:",
+      {
+        reply_markup: {
+          keyboard: [
+            [{ text: "➕ Створити бонус-код" }],
+            [{ text: "📋 Список бонус-кодів" }],
+            [{ text: "📣 Розіслати бонус-код" }],
+            [{ text: "🗑 Деактивувати код" }],
+            [{ text: "⬅️ Назад" }]
+          ],
+          resize_keyboard: true
+        }
+      }
+    );
+
+    return;
+  }
 	
   if (text === "🏠 Назад" && isAdmin(chatId)) {
     await sendMessage(
