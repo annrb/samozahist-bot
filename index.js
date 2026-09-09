@@ -46,6 +46,7 @@ function adminKeyboard() {
       [{ text: "📊 Статистика" }],
       [{ text: "📦 Наявність товарів" }],
       [{ text: "💰 Зміна цін" }],
+	  [{ text: "🎁 Бонус-коди" }],
       [{ text: "🏠 Назад" }]
     ],
     resize_keyboard: true
