@@ -1125,7 +1125,8 @@ const user = getUserData(msg, source);
 
   return;
 }
-	  if (text === "🎁 Бонус-коди" && isAdmin(chatId)) {
+	 /* 
+	if (text === "🎁 Бонус-коди" && isAdmin(chatId)) {
     await sendMessage(
       chatId,
       "🎁 Керування бонус-кодами:",
@@ -1495,6 +1496,7 @@ if (isAdmin(chatId) && bonusState.has(chatId)) {
     return;
   }
 }
+*/
 	
   if (text === "🏠 Назад" && isAdmin(chatId)) {
     await sendMessage(
