@@ -32,6 +32,7 @@ const adminMenuUsers = new Set();
 const replyState = new Map();
 const editState = new Map();
 const priceState = new Map();
+const bonusState = new Map();
 
 const ttnState = new Map();
 
